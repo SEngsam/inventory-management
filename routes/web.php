@@ -6,6 +6,7 @@ use App\Livewire\ProductForm;
 use App\Livewire\ProductList;
 use App\Models\Customer;
 use App\Models\Sale;
+use App\Models\SaleReturn;
 
 require __DIR__ . '/auth.php';
 
@@ -37,6 +38,18 @@ Route::get('/sales/show/{sale}', function ($sale) {
         'sale' => Sale::findOrFail($sale)
     ]);
 })->name('sale.show');
+
+Route::get('/sales/returns', fn() => view('inventory.sales.return-list'))->name('sale-returns.index');
+
+Route::get('/sales/returns/create', fn() => view('inventory.sales.return-form'))->name('sale-returns.create');
+
+Route::get('/sales/returns/edit/{return}', fn($return) => view('inventory.sales.return-form', [
+    'return' => SaleReturn::findOrFail($return),
+]))->name('sale-returns.edit');
+
+Route::get('/sales/returns/show/{return}', fn($return) => view('inventory.sales.return-show', [
+    'return' => SaleReturn::findOrFail($return),
+]))->name('sale-returns.show');
 
 Route::get('/customers', action: fn() => view('inventory.customers.customer-list'))->name('customer.index');
 Route::get('/customers/create', fn() => view('inventory.customers.customer-form', ['customer' => null]))->name('customers.create');
