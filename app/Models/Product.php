@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'product_image',
@@ -23,7 +24,16 @@ class Product extends Model
         'guarantee_period',
         'has_imei',
         'not_for_selling',
+        'type',
+        'code',
+        'unit_id',
     ];
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
 
     // 🔁 Relationships
     public function category()

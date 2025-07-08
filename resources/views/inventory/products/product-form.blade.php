@@ -16,8 +16,8 @@
 </div>
 
 @if (isset($id))
-    <livewire:product-form :productId="$id"/>
+    <livewire:products.product-form :productId="$id"/>
 @else
-    <livewire:product-form />
+    <livewire:products.product-form />
 @endif
 @endsection

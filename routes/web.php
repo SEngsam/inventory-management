@@ -16,11 +16,10 @@ Route::prefix('product')->name('product.')->group(function () {
     Route::get('/brands', function () {return view('inventory.brands');});
 });
 
-Route::get('/product',  fn() => view('inventory.product.list'))->name('product.list');
-Route::get('/product/create', fn() => view('inventory.product.form'))->name('product.create');
+Route::get('/product',  fn() => view('inventory.products.product-list'))->name('product.list');
+Route::get('/product/create', fn() => view('inventory.products.product-form'))->name('product.create');
+Route::get('/products/{id}/edit', fn($id) => view('inventory.products.product-form', ['id' => $id]))->name('product.edit');
 
-
-Route::get('/products/{id}/edit', fn($id) => view('inventory.product.form', ['id' => $id]))->name('product.edit');
 Route::get('/purchases', fn() => view('inventory.purchases.purchase-list'))->name('purchases.list');
 Route::get('/purchases/create', fn() => view('inventory.purchases.purchase-form'))->name('purchases.create');
 Route::get('/purchases/{purchaseId}', fn() => view('inventory.purchases.purchase-show'))->name('purchases.show');

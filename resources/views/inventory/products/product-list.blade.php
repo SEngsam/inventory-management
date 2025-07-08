@@ -14,5 +14,5 @@
         </ol>
     </div>
 </div>
-    <livewire:product-list  />
+    <livewire:products.product-list  />
 @endsection

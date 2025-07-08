@@ -1,39 +1,44 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Products;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Product;
+use App\Models\Unit;
 
 class ProductForm extends Component
 {
-   use WithFileUploads;
+    use WithFileUploads;
 
     public $productId;
-    public $name, $product_image, $new_product_image;
-    public $category_id, $brand_id;
+    public $name, $type, $code, $product_image, $new_product_image;
+    public $category_id, $brand_id, $unit_id;
     public $order_tax, $tax_type = 'percent';
     public $description, $product_price;
     public $warranty_period, $guarantee, $guarantee_period;
     public $has_imei = false, $not_for_selling = false;
 
-    public $categories = [], $brands = [];
-
+    public $categories = [], $brands = [], $units = [];
 
     public function mount($productId = null)
     {
         $this->categories = Category::all();
         $this->brands = Brand::all();
+        $this->units = Unit::all();
+
         if ($productId) {
             $product = Product::findOrFail($productId);
             $this->productId = $product->id;
             $this->name = $product->name;
+            $this->type = $product->type;
+            $this->code = $product->code;
             $this->product_image = $product->product_image;
             $this->category_id = $product->category_id;
             $this->brand_id = $product->brand_id;
+            $this->unit_id = $product->unit_id;
             $this->order_tax = $product->order_tax;
             $this->tax_type = $product->tax_type;
             $this->description = $product->description;
@@ -46,12 +51,15 @@ class ProductForm extends Component
         }
     }
 
-        public function save()
+    public function save()
     {
         $this->validate([
             'name' => 'required|string|max:255',
+            'type' => 'nullable|string|max:255',
+            'code' => 'nullable|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
+            'unit_id' => 'nullable|exists:units,id',
             'order_tax' => 'nullable|numeric',
             'tax_type' => 'required|in:percent,fixed',
             'product_price' => 'required|numeric',
@@ -66,8 +74,11 @@ class ProductForm extends Component
 
         $data = [
             'name' => $this->name,
+            'type' => $this->type,
+            'code' => $this->code,
             'category_id' => $this->category_id,
             'brand_id' => $this->brand_id,
+            'unit_id' => $this->unit_id,
             'order_tax' => $this->order_tax,
             'tax_type' => $this->tax_type,
             'description' => $this->description,
@@ -83,12 +94,11 @@ class ProductForm extends Component
         Product::updateOrCreate(['id' => $this->productId], $data);
 
         session()->flash('message', $this->productId ? 'Product updated successfully.' : 'Product created successfully.');
-
         return redirect()->route('product.list');
     }
 
     public function render()
     {
-        return view('livewire.product-form');
+        return view('livewire.products.product-form');
     }
 }
