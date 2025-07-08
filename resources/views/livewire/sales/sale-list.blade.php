@@ -37,10 +37,10 @@
                                 <td>{{ $sale->items_count }}</td>
                                 <td>{{ \Illuminate\Support\Str::limit($sale->note, 30) }}</td>
                                 <td>
-                                    <a href="{{ route('sales.show', $sale->id) }}" title="View">
+                                    <a href="{{ route('sale.show', $sale->id) }}" title="View">
                                         <i class="mdi mdi-eye text-info fs-18 border rounded p-1 me-1"></i>
                                     </a>
-                                    <a href="{{ route('sales.edit', $sale->id) }}" title="Edit">
+                                    <a href="{{ route('sale.edit', $sale->id) }}" title="Edit">
                                         <i class="mdi mdi-pencil text-muted fs-18 border rounded p-1"></i>
                                     </a>
                                 </td>

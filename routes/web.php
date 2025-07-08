@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
 use App\Livewire\ProductForm;
 use App\Livewire\ProductList;
+use App\Models\Customer;
+use App\Models\Sale;
 
 require __DIR__ . '/auth.php';
 
@@ -29,7 +31,18 @@ Route::get('/suppliers/{supplierId}/edit', fn() => view('inventory.suppliers.sup
 
 Route::get('/sales', fn() => view('inventory.sales.sale-list'))->name('sales.index');
 Route::get('/sales/create', fn() => view('inventory.sales.sale-from'))->name('sales.create');
+Route::get('/sales/edit/{sale}', fn($sale) => view('inventory.sales.sale-from', ['sale' => $sale]))->name('sale.edit');
+Route::get('/sales/show/{sale}', function ($sale) {
+    return view('inventory.sales.sale-show', [
+        'sale' => Sale::findOrFail($sale)
+    ]);
+})->name('sale.show');
 
+Route::get('/customers', action: fn() => view('inventory.customers.customer-list'))->name('customer.index');
+Route::get('/customers/create', fn() => view('inventory.customers.customer-form', ['customer' => null]))->name('customers.create');
+Route::get('/customers/edit/{customer}', function (Customer $customer) {
+    return view('inventory.customers.customer-form', ['customer' => $customer]);
+})->name('customer.edit');
 
 Route::group(['prefix' => '/', 'middleware' => 'auth'], function () {
     Route::get('', [RoutingController::class, 'index'])->name('root');
