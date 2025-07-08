@@ -10,6 +10,8 @@ class SupplierForm extends Component
     public $supplierId;
     public $name, $email, $phone, $company, $address, $note;
 
+    protected $listeners = ['resetForm'];
+
     public function mount($supplierId = null)
     {
         $this->supplierId = $supplierId;
@@ -44,7 +46,16 @@ class SupplierForm extends Component
         );
 
         session()->flash('message', $this->supplierId ? 'Supplier updated!' : 'Supplier created!');
+
+        $this->dispatch($this->supplierId ? 'supplierUpdated' : 'supplierAdded');
+
         return redirect()->route('suppliers.index');
+    }
+
+    public function resetForm()
+    {
+        $this->supplierId = null;
+        $this->name = $this->email = $this->phone = $this->company = $this->address = $this->note = null;
     }
 
     public function render()
@@ -52,4 +63,3 @@ class SupplierForm extends Component
         return view('livewire.suppliers.supplier-form');
     }
 }
-

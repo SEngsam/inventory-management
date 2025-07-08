@@ -1,41 +1,51 @@
 <?php
+
 namespace App\Livewire\Suppliers;
 
 use Livewire\Component;
 use App\Models\Supplier;
+use Livewire\WithPagination;
 
 class SupplierList extends Component
 {
-    public $suppliers;
+    use WithPagination;
+
     public $selectedSuppliers = [];
     public $selectAll = false;
 
-    public function mount()
-    {
-        $this->loadSuppliers();
-    }
-
-    public function loadSuppliers()
-    {
-        $this->suppliers = Supplier::latest()->get();
-    }
+    protected $listeners = ['supplierAdded' => '$refresh', 'supplierUpdated' => '$refresh'];
+    protected $paginationTheme = 'bootstrap';
 
     public function updatedSelectAll($value)
     {
-        $this->selectedSuppliers = $value ? $this->suppliers->pluck('id')->toArray() : [];
+        if ($value) {
+            $this->selectedSuppliers = Supplier::latest()->paginate(10)->pluck('id')->toArray();
+        } else {
+            $this->selectedSuppliers = [];
+        }
     }
 
     public function deleteSelected()
     {
-        Supplier::whereIn('id', $this->selectedSuppliers)->delete();
-        session()->flash('message', 'Selected suppliers deleted!');
-        $this->selectedSuppliers = [];
-        $this->selectAll = false;
-        $this->loadSuppliers();
+        if (!empty($this->selectedSuppliers)) {
+            Supplier::whereIn('id', $this->selectedSuppliers)->delete();
+            session()->flash('message', 'Selected suppliers deleted!');
+            $this->selectedSuppliers = [];
+            $this->selectAll = false;
+            $this->resetPage();
+        }
+    }
+
+    public function delete($supplierId)
+    {
+        Supplier::find($supplierId)->delete();
+        session()->flash('message', 'Supplier deleted!');
+        $this->resetPage();
     }
 
     public function render()
     {
-        return view('livewire.suppliers.supplier-list');
+        $suppliers = Supplier::latest()->paginate(10);
+        return view('livewire.suppliers.supplier-list', compact('suppliers'));
     }
 }

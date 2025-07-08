@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('sale_return_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sale_return_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('sale_return_id');
+            $table->unsignedBigInteger('product_id');
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);
+            $table->decimal('total', 10, 2);
             $table->timestamps();
+
+            $table->foreign('sale_return_id')->references('id')->on('sale_returns')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('restrict');
         });
     }
 

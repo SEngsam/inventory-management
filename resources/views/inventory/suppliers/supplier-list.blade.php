@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['title' => "Purchases"])
+@extends('layouts.vertical', ['title' => "List Suppliers"])
 
 @section('content')
 <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">

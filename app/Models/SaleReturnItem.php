@@ -10,13 +10,13 @@ class SaleReturnItem extends Model
     use HasFactory;
     protected $fillable = ['sale_return_id', 'product_id', 'quantity', 'unit_price'];
 
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
-
     public function saleReturn()
     {
         return $this->belongsTo(SaleReturn::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }

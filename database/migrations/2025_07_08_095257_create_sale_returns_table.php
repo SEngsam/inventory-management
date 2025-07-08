@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('sale_returns', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sale_id')->constrained()->onDelete('cascade');
             $table->string('reference_no')->unique();
             $table->date('return_date');
+            $table->unsignedBigInteger('sale_id')->nullable();
+            $table->unsignedBigInteger('customer_id')->nullable();
             $table->text('note')->nullable();
             $table->timestamps();
+            $table->foreign('sale_id')->references('id')->on('sales')->onDelete('set null');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
         });
     }
 
