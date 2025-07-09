@@ -10,14 +10,15 @@
             @endif
 
             <form wire:submit.prevent="save">
-
                 <!-- Supplier -->
                 <div class="mb-3">
                     <label class="form-label">Supplier</label>
                     <select class="form-select" wire:model="supplier_id">
                         <option value="">-- Select Supplier --</option>
                         @foreach ($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                            <option value="{{ $supplier->id }}" @if ($supplier->id == $supplier_id)
+                            selected
+                            @endif >{{ $supplier->name }}</option>
                         @endforeach
                     </select>
                     @error('supplier_id') <div class="text-danger">{{ $message }}</div> @enderror

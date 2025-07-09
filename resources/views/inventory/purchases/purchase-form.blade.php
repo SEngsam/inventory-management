@@ -14,5 +14,12 @@
         </ol>
     </div>
 </div>
+
+@if (isset($purchase))
+
+    <livewire:purchases.purchase-form   :purchase="$purchase"/>
+@else
     <livewire:purchases.purchase-form  />
+
+@endif
 @endsection

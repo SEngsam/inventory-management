@@ -7,17 +7,17 @@ use App\Models\Supplier;
 
 class SupplierForm extends Component
 {
-    public $supplierId;
+    public $supplier;
+
     public $name, $email, $phone, $company, $address, $note;
 
     protected $listeners = ['resetForm'];
 
-    public function mount($supplierId = null)
+    public function mount(?Supplier $supplier = null)
     {
-        $this->supplierId = $supplierId;
+        $this->supplier = $supplier;
+        if ($supplier && $supplier->exists) {
 
-        if ($supplierId) {
-            $supplier = Supplier::findOrFail($supplierId);
             $this->fill($supplier->only('name', 'email', 'phone', 'company', 'address', 'note'));
         }
     }
@@ -34,7 +34,7 @@ class SupplierForm extends Component
         ]);
 
         Supplier::updateOrCreate(
-            ['id' => $this->supplierId],
+            ['id' => $this->supplier->id],
             [
                 'name' => $this->name,
                 'email' => $this->email,
@@ -45,16 +45,16 @@ class SupplierForm extends Component
             ]
         );
 
-        session()->flash('message', $this->supplierId ? 'Supplier updated!' : 'Supplier created!');
+        session()->flash('message', $this->supplier->id ? 'Supplier updated!' : 'Supplier created!');
 
-        $this->dispatch($this->supplierId ? 'supplierUpdated' : 'supplierAdded');
+        $this->dispatch($this->supplier->id ? 'supplierUpdated' : 'supplierAdded');
 
         return redirect()->route('suppliers.index');
     }
 
     public function resetForm()
     {
-        $this->supplierId = null;
+        $this->supplier = null;
         $this->name = $this->email = $this->phone = $this->company = $this->address = $this->note = null;
     }
 

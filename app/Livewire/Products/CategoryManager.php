@@ -75,7 +75,7 @@ class CategoryManager extends Component
 
     public function render()
     {
-        return view('livewire.category-manager', [
+        return view('livewire.products.category-manager', [
             'categories' => $this->categories,
         ]);
     }

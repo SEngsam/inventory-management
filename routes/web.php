@@ -12,22 +12,24 @@ require __DIR__ . '/auth.php';
 
 Route::prefix('product')->name('product.')->group(function () {
     Route::get('/units', function () {return view('inventory.units');});
-    Route::get('/categories', function () {return view('inventory.categories');});
-    Route::get('/brands', function () {return view('inventory.brands');});
+    Route::get('/categories', function () {return view('inventory.products.categories');});
+    Route::get('/brands', function () {return view('inventory.products.brands');});
 });
 
 Route::get('/product',  fn() => view('inventory.products.product-list'))->name('product.list');
 Route::get('/product/create', fn() => view('inventory.products.product-form'))->name('product.create');
 Route::get('/products/{id}/edit', fn($id) => view('inventory.products.product-form', ['id' => $id]))->name('product.edit');
 
-Route::get('/purchases', fn() => view('inventory.purchases.purchase-list'))->name('purchases.list');
-Route::get('/purchases/create', fn() => view('inventory.purchases.purchase-form'))->name('purchases.create');
-Route::get('/purchases/{purchaseId}', fn() => view('inventory.purchases.purchase-show'))->name('purchases.show');
+Route::get('/purchases', fn() => view('inventory.purchases.purchase-list'))->name('purchase.index');
+Route::get('/purchases/create', fn() => view('inventory.purchases.purchase-form'))->name('purchase.create');
+Route::get('/purchases/edit/{purchase}', fn($purchase) => view('inventory.purchases.purchase-form', ['purchase' => $purchase]))->name('purchase.edit');
+
+Route::get('/purchases/{purchase}', fn($purchase) => view('inventory.purchases.purchase-show',['purchase' => $purchase]))->name('purchase.show');
 
 
 Route::get('/suppliers', fn() => view('inventory.suppliers.supplier-list'))->name('suppliers.index');
 Route::get('/suppliers/create', fn() => view('inventory.suppliers.supplier-form'))->name('suppliers.create');
-Route::get('/suppliers/{supplierId}/edit', fn() => view('inventory.suppliers.supplier-form'))->name('suppliers.edit');
+Route::get('/suppliers/edit/{supplier}', fn($supplier) => view('inventory.suppliers.supplier-form', ['supplier' => $supplier]))->name('supplier.edit');
 
 Route::get('/sales', fn() => view('inventory.sales.sale-list'))->name('sales.index');
 Route::get('/sales/create', fn() => view('inventory.sales.sale-from'))->name('sales.create');

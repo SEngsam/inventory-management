@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header">
-        <h5 class="card-title mb-0">{{ $supplierId ? 'Edit Supplier' : 'Add Supplier' }}</h5>
+        <h5 class="card-title mb-0">{{ isset($supplier) ? 'Edit Supplier' : 'Add Supplier' }}</h5>
     </div>
     <div class="card-body">
         <form wire:submit.prevent="save">

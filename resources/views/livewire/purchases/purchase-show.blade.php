@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between">
         <h5 class="card-title mb-0">Purchase #{{ $purchase->reference_no }}</h5>
-        <a href="{{ route('purchases.index') }}" class="btn btn-light">← Back</a>
+        <a href="{{ route('purchase.index') }}" class="btn btn-light">← Back</a>
     </div>
 
     <div class="card-body">

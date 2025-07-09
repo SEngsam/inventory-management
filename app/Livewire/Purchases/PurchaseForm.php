@@ -6,54 +6,47 @@ use Livewire\Component;
 use App\Models\Supplier;
 use App\Models\Product;
 use App\Models\Purchase;
+use App\Models\PurchaseItem;
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
 class PurchaseForm extends Component
 {
+    public $purchase;
     public $purchaseId;
-
     public $supplier_id;
     public $purchase_date;
     public $reference_no;
     public $status = 'received';
-    public $note;
+    public $notes;
 
     public $suppliers;
     public $products;
     public $items = [];
 
-    public function mount($purchaseId = null)
+    public function mount(?Purchase $purchase= null)
     {
         $this->suppliers = Supplier::all();
         $this->products = Product::all();
 
-        $this->purchaseId = $purchaseId;
+        if ($purchase && $purchase->exists) {
+        $this->purchaseId = $purchase->id;
 
-        if ($purchaseId) {
-            $purchase = Purchase::with('items')->find($purchaseId);
+            $purchase = Purchase::with('items')->findOrFail($this->purchaseId);
+            $this->fill($purchase->only('supplier_id', 'purchase_date', 'reference_no', 'status', 'notes'));
 
-            if ($purchase) {
-                $this->fill($purchase->only('supplier_id', 'purchase_date', 'reference_no', 'status', 'note'));
-
-                $this->items = $purchase->items->map(function ($item) {
-                    return [
-                        'product_id' => $item->product_id,
-                        'quantity' => $item->quantity,
-                        'unit_cost' => $item->unit_cost,
-                    ];
-                })->toArray();
-            } else {
-                $this->initEmptyItem();
-            }
+            $this->items = $purchase->items->map(function ($item) {
+                return [
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'unit_cost' => $item->unit_cost,
+                ];
+            })->toArray();
         } else {
-            $this->initEmptyItem();
+            $this->reference_no = 'REF-' . strtoupper(Str::random(6));
+            $this->purchase_date = Carbon::now()->format('Y-m-d');
+            $this->items[] = ['product_id' => '', 'quantity' => 1, 'unit_cost' => 0];
         }
-    }
-
-    protected function initEmptyItem()
-    {
-        $this->items = [
-            ['product_id' => '', 'quantity' => 1, 'unit_cost' => 0],
-        ];
     }
 
     public function addItem()
@@ -63,10 +56,8 @@ class PurchaseForm extends Component
 
     public function removeItem($index)
     {
-        if (isset($this->items[$index])) {
-            unset($this->items[$index]);
-            $this->items = array_values($this->items);
-        }
+        unset($this->items[$index]);
+        $this->items = array_values($this->items);
     }
 
     public function save()
@@ -74,34 +65,28 @@ class PurchaseForm extends Component
         $this->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'purchase_date' => 'required|date',
-            'reference_no' => 'required|string',
             'status' => 'required|in:received,pending,ordered',
-            'note' => 'nullable|string',
         ]);
 
-        // Validate items array is not empty
         if (empty($this->items)) {
-            $this->addError('items', 'You must add at least one purchase item.');
+            $this->addError('items', 'At least one item is required.');
             return;
         }
 
-        // Validate each item
+        $totalAmount = 0;
+
         foreach ($this->items as $index => $item) {
             if (empty($item['product_id'])) {
                 $this->addError("items.$index.product_id", 'Product is required.');
                 return;
             }
-            if (empty($item['quantity']) || $item['quantity'] <= 0) {
-                $this->addError("items.$index.quantity", 'Quantity must be at least 1.');
+            if ($item['quantity'] <= 0 || $item['unit_cost'] < 0) {
+                $this->addError("items.$index.quantity", 'Quantity and cost must be positive.');
                 return;
             }
-            if (!isset($item['unit_cost']) || $item['unit_cost'] <= 0) {
-                $this->addError("items.$index.unit_cost", 'Unit cost must be greater than zero.');
-                return;
-            }
+            $totalAmount += $item['quantity'] * $item['unit_cost'];
         }
 
-        // Save purchase
         $purchase = Purchase::updateOrCreate(
             ['id' => $this->purchaseId],
             [
@@ -109,13 +94,14 @@ class PurchaseForm extends Component
                 'purchase_date' => $this->purchase_date,
                 'reference_no' => $this->reference_no,
                 'status' => $this->status,
-                'note' => $this->note,
+                'notes' => $this->notes,
             ]
         );
 
-
-        // Delete old items (if editing)
         if ($this->purchaseId) {
+            foreach ($purchase->items as $oldItem) {
+                $oldItem->product->decrement('stock_quantity', $oldItem->quantity);
+            }
             $purchase->items()->delete();
         }
 
@@ -124,24 +110,18 @@ class PurchaseForm extends Component
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'unit_cost' => $item['unit_cost'],
-                'total' => $item['quantity'] * $item['unit_cost'],
+                'total' => $totalAmount,
+
             ]);
-        }
-        $product = Product::find($item['product_id']);
-        if ($product) {
-            $product->increment('stock_quantity', $item['quantity']);
-        }
 
-        if ($this->purchaseId) {
-            foreach ($purchase->items as $oldItem) {
-                $oldItem->product->decrement('stock_quantity', $oldItem->quantity);
+            $product = Product::find($item['product_id']);
+            if ($product) {
+                $product->increment('stock_quantity', $item['quantity']);
             }
-
-            $purchase->items()->delete();
         }
 
         session()->flash('message', $this->purchaseId ? 'Purchase updated!' : 'Purchase created!');
-        return redirect()->route('purchases.index');
+        return redirect()->route('purchase.index');
     }
 
     public function render()

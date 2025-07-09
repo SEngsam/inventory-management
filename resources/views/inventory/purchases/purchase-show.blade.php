@@ -14,5 +14,6 @@
         </ol>
     </div>
 </div>
-    <livewire:purchases.purchase-show  />
+
+    <livewire:purchases.purchase-show   :purchaseId='$purchase'/>
 @endsection

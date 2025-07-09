@@ -13,7 +13,7 @@
         </ol>
     </div>
 </div>
-    <livewire:category-manager />
+    <livewire:products.category-manager />
 
 
 @endsection

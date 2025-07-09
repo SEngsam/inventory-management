@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->string('reference')->unique();
+            $table->string('reference_no')->unique();
             $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->nullOnDelete();
             $table->date('purchase_date')->nullable();
-            $table->decimal('total_amount', 15, 2)->default(0);
             $table->string('status')->default('pending');
             $table->text('notes')->nullable();
             $table->timestamps();
