@@ -27,13 +27,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-           CategorySeeder::class,
-           BrandSeeder::class,
-           UnitSeeder::class,
+            CategorySeeder::class,
+            BrandSeeder::class,
+            UnitSeeder::class,
             ProductSeeder::class,
-        SupplierSeeder::class,
-
-            CustomerSeeder::class
+            SupplierSeeder::class,
+            CustomerSeeder::class,
+            InvoiceSeeder::class
 
         ]);
     }

@@ -15,7 +15,7 @@ class CustomerForm extends Component
     public $address;
     public $note;
 
-    public function mount(Customer $customer = null)
+    public function mount(?Customer $customer = null)
     {
         $this->customer = $customer;
 

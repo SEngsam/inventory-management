@@ -13,7 +13,7 @@ class UnitSeeder extends Seeder
      */
     public function run(): void
     {
-              $piece = Unit::create([
+        $piece = Unit::create([
             'name' => 'Piece',
             'short_code' => 'pc',
             'base_unit_id' => null,

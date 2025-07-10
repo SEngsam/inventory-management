@@ -18,7 +18,8 @@
     <div class="content-page">
         <div class="content">
             <div class="container-xxl">
-                @yield('content')
+               {{ $slot}}
+                {{-- @yield('content') --}}
             </div>
         </div>
 

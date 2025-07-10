@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
+use App\Livewire\Invoices\CreateInvoice;
+use App\Livewire\Invoices\InvoiceList;
+use App\Livewire\Invoices\InvoiceShow;
 use App\Livewire\ProductForm;
 use App\Livewire\ProductList;
 use App\Models\Customer;
@@ -11,9 +14,15 @@ use App\Models\SaleReturn;
 require __DIR__ . '/auth.php';
 
 Route::prefix('product')->name('product.')->group(function () {
-    Route::get('/units', function () {return view('inventory.units');});
-    Route::get('/categories', function () {return view('inventory.products.categories');});
-    Route::get('/brands', function () {return view('inventory.products.brands');});
+    Route::get('/units', function () {
+        return view('inventory.units');
+    });
+    Route::get('/categories', function () {
+        return view('inventory.products.categories');
+    });
+    Route::get('/brands', function () {
+        return view('inventory.products.brands');
+    });
 });
 
 Route::get('/product',  fn() => view('inventory.products.product-list'))->name('product.list');
@@ -24,7 +33,7 @@ Route::get('/purchases', fn() => view('inventory.purchases.purchase-list'))->nam
 Route::get('/purchases/create', fn() => view('inventory.purchases.purchase-form'))->name('purchase.create');
 Route::get('/purchases/edit/{purchase}', fn($purchase) => view('inventory.purchases.purchase-form', ['purchase' => $purchase]))->name('purchase.edit');
 
-Route::get('/purchases/{purchase}', fn($purchase) => view('inventory.purchases.purchase-show',['purchase' => $purchase]))->name('purchase.show');
+Route::get('/purchases/{purchase}', fn($purchase) => view('inventory.purchases.purchase-show', ['purchase' => $purchase]))->name('purchase.show');
 
 
 Route::get('/suppliers', fn() => view('inventory.suppliers.supplier-list'))->name('suppliers.index');
@@ -57,6 +66,12 @@ Route::get('/customers/create', fn() => view('inventory.customers.customer-form'
 Route::get('/customers/edit/{customer}', function (Customer $customer) {
     return view('inventory.customers.customer-form', ['customer' => $customer]);
 })->name('customer.edit');
+
+
+//Invoices Route
+Route::get('/invoices', InvoiceList::class)->name('invoices.index');
+Route::get('/invoices/{invoice}', InvoiceShow::class)->name('invoices.show');
+Route::get('/invoice/create', CreateInvoice::class)->name('invoices.create');
 
 Route::group(['prefix' => '/', 'middleware' => 'auth'], function () {
     Route::get('', [RoutingController::class, 'index'])->name('root');
