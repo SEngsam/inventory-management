@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,6 +27,25 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
         ]);
+
+
+        // Permissions
+        Permission::create(['name' => 'view_sales']);
+        Permission::create(['name' => 'edit_sales']);
+        Permission::create(['name' => 'manage_products']);
+        Permission::create(['name' => 'view_reports']);
+
+        // Roles
+        $admin = Role::create(['name' => 'admin']);
+        $sales = Role::create(['name' => 'sales']);
+        $manager = Role::create(['name' => 'stock']);
+        $viewer = Role::create(['name' => 'viewer']);
+
+        // Permissions to Roles
+        $admin->givePermissionTo(Permission::all());
+        $sales->givePermissionTo(['view_sales', 'edit_sales']);
+        $manager->givePermissionTo(['manage_products']);
+        $viewer->givePermissionTo(['view_sales']);
 
         $this->call([
             CategorySeeder::class,

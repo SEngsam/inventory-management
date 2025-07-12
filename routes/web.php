@@ -1,6 +1,8 @@
 <?php
 
 use App\Livewire\Sales\ReturnShow;
+use App\Livewire\Users\RoleManager;
+use App\Livewire\Users\UserManager;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
 use App\Livewire\DashboardPanel;
@@ -40,63 +42,71 @@ require __DIR__ . '/auth.php';
 */
 
 // Dashboard
-Route::get('/', DashboardPanel::class)->name('root');
 
-// Product routes
-Route::prefix('products')->name('product.')->group(function () {
-    Route::get('/units', UnitManager::class);
-    Route::get('/categories', CategoryManager::class);
-    Route::get('/brands', BrandManager::class);
-});
-Route::get('/products', ProductList::class)->name('products.list');
-Route::get('/products/create', ProductForm::class)->name('products.create');
-Route::get('/products/{id}/edit', ProductForm::class)->name('products.edit');
-
-// Purchases
-Route::get('/purchases', PurchaseList::class)->name('purchases.index');
-Route::get('/purchases/create', PurchaseForm::class)->name('purchases.create');
-Route::get('/purchases/edit/{purchaseId}', PurchaseForm::class)->name('purchases.edit');
-Route::get('/purchases/{purchaseId}', PurchaseShow::class)->name('purchases.show');
-
-// Sales
-Route::get('/sales', SaleList::class)->name('sales.index');
-Route::get('/sales/create', SaleForm::class)->name('sales.create');
-Route::get('/sales/edit/{sale}', SaleForm::class)->name('sales.edit');
-Route::get('/sales/{sale}', SaleShow::class)->name('sales.show');
-
-// Sale Returns
-
-Route::get('/returns', ReturnList::class)->name('sale-returns.index');
-Route::get('/returns/create', action: ReturnForm::class)->name('sale-returns.create');
-Route::get('/returns/edit/{return}', ReturnForm::class)->name('sale-returns.edit');
-Route::get('/returns/{return}', ReturnShow::class)->name('sale-returns.show');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/users/roles', RoleManager::class)->name('admin.roles');
+    Route::get('/users/users', UserManager::class)->name('admin.users');
 
 
-// Suppliers
-Route::get('/suppliers', SupplierList::class)->name('suppliers.index');
-Route::get('/suppliers/create', SupplierForm::class)->name('suppliers.create');
-Route::get('/suppliers/edit/{supplier}', fn($supplier) => view('inventory.suppliers.supplier-form', ['supplier' => $supplier]))->name('supplier.edit');
 
-// Customers
-Route::get('/customers', fn() => view('inventory.customers.customer-list'))->name('customer.index');
-Route::get('/customers/create', fn() => view('inventory.customers.customer-form', ['customer' => null]))->name('customers.create');
-Route::get('/customers/edit/{customer}', function (Customer $customer) {
-    return view('inventory.customers.customer-form', ['customer' => $customer]);
-})->name('customer.edit');
+    Route::get('/', DashboardPanel::class)->name('root');
 
-// Invoices
-Route::get('/invoices', InvoiceList::class)->name('invoices.index');
-Route::get('/invoice/create', CreateInvoice::class)->name('invoices.create');
-Route::get('/invoices/{invoice}', InvoiceShow::class)->name('invoices.show');
+    // Product routes
+    Route::prefix('products')->name('product.')->group(function () {
+        Route::get('/units', UnitManager::class);
+        Route::get('/categories', CategoryManager::class);
+        Route::get('/brands', BrandManager::class);
+    });
+    Route::get('/products', ProductList::class)->name('products.list');
+    Route::get('/products/create', ProductForm::class)->name('products.create');
+    Route::get('/products/{id}/edit', ProductForm::class)->name('products.edit');
+
+    // Purchases
+    Route::get('/purchases', PurchaseList::class)->name('purchases.index');
+    Route::get('/purchases/create', PurchaseForm::class)->name('purchases.create');
+    Route::get('/purchases/edit/{purchaseId}', PurchaseForm::class)->name('purchases.edit');
+    Route::get('/purchases/{purchaseId}', PurchaseShow::class)->name('purchases.show');
+
+    // Sales
+    Route::get('/sales', SaleList::class)->name('sales.index');
+    Route::get('/sales/create', SaleForm::class)->name('sales.create');
+    Route::get('/sales/edit/{sale}', SaleForm::class)->name('sales.edit');
+    Route::get('/sales/{sale}', SaleShow::class)->name('sales.show');
+
+    // Sale Returns
+
+    Route::get('/returns', ReturnList::class)->name('sale-returns.index');
+    Route::get('/returns/create', action: ReturnForm::class)->name('sale-returns.create');
+    Route::get('/returns/edit/{return}', ReturnForm::class)->name('sale-returns.edit');
+    Route::get('/returns/{return}', ReturnShow::class)->name('sale-returns.show');
 
 
-/*
+    // Suppliers
+    Route::get('/suppliers', SupplierList::class)->name('suppliers.index');
+    Route::get('/suppliers/create', SupplierForm::class)->name('suppliers.create');
+    Route::get('/suppliers/edit/{supplier}', fn($supplier) => view('inventory.suppliers.supplier-form', ['supplier' => $supplier]))->name('supplier.edit');
+
+    // Customers
+    Route::get('/customers', fn() => view('inventory.customers.customer-list'))->name('customer.index');
+    Route::get('/customers/create', fn() => view('inventory.customers.customer-form', ['customer' => null]))->name('customers.create');
+    Route::get('/customers/edit/{customer}', function (Customer $customer) {
+        return view('inventory.customers.customer-form', ['customer' => $customer]);
+    })->name('customer.edit');
+
+    // Invoices
+    Route::get('/invoices', InvoiceList::class)->name('invoices.index');
+    Route::get('/invoice/create', CreateInvoice::class)->name('invoices.create');
+    Route::get('/invoices/{invoice}', InvoiceShow::class)->name('invoices.show');
+
+
+    /*
 |--------------------------------------------------------------------------
 | Dynamic Catch-All Routes (Last)
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->group(function () {
-    Route::get('{first}/{second}/{third}', [RoutingController::class, 'thirdLevel'])->name('third');
-    Route::get('{first}/{second}', [RoutingController::class, 'secondLevel'])->name('second');
-    Route::get('{any}', [RoutingController::class, 'root'])->name('any');
+    Route::middleware('auth')->group(function () {
+        Route::get('{first}/{second}/{third}', [RoutingController::class, 'thirdLevel'])->name('third');
+        Route::get('{first}/{second}', [RoutingController::class, 'secondLevel'])->name('second');
+        Route::get('{any}', [RoutingController::class, 'root'])->name('any');
+    });
 });
