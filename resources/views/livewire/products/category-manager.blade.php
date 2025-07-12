@@ -1,3 +1,16 @@
+<div>
+    <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+    <div class="flex-grow-1">
+        <h4 class="fs-18 fw-semibold m-0">Category</h4>
+    </div>
+
+    <div class="text-end">
+        <ol class="breadcrumb m-0 py-0">
+            <li class="breadcrumb-item"><a href="javascript: void(0);">Products</a></li>
+            <li class="breadcrumb-item active">Category</li>
+        </ol>
+    </div>
+</div>
 <div class="row">
     <div class="col-12">
         @if (session()->has('message'))
@@ -132,3 +145,5 @@
         @endif
     });
 </script>
+
+</div>

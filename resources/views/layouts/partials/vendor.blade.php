@@ -1,4 +1,4 @@
 <!-- bundle -->
-@yield('script')
+@stack('script')
 <!-- App js -->
 @yield('script-bottom')

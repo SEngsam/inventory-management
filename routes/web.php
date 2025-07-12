@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
+use App\Livewire\DashboardPanel;
 use App\Livewire\Invoices\CreateInvoice;
 use App\Livewire\Invoices\InvoiceList;
 use App\Livewire\Invoices\InvoiceShow;
 use App\Livewire\ProductForm;
 use App\Livewire\ProductList;
+use App\Livewire\Products\CategoryManager;
 use App\Models\Customer;
 use App\Models\Sale;
 use App\Models\SaleReturn;
@@ -17,9 +19,7 @@ Route::prefix('product')->name('product.')->group(function () {
     Route::get('/units', function () {
         return view('inventory.units');
     });
-    Route::get('/categories', function () {
-        return view('inventory.products.categories');
-    });
+    Route::get('/categories', CategoryManager::class);
     Route::get('/brands', function () {
         return view('inventory.products.brands');
     });
@@ -74,8 +74,9 @@ Route::get('/invoices/{invoice}', InvoiceShow::class)->name('invoices.show');
 Route::get('/invoice/create', CreateInvoice::class)->name('invoices.create');
 
 Route::group(['prefix' => '/', 'middleware' => 'auth'], function () {
-    Route::get('', [RoutingController::class, 'index'])->name('root');
-    Route::get('/home', fn() => view('index'))->name('home');
+    Route::get('', DashboardPanel::class)->name('root');
+
+    // Route::get('/home', fn() => view('index'))->name('home');
     Route::get('{first}/{second}/{third}', [RoutingController::class, 'thirdLevel'])->name('third');
     Route::get('{first}/{second}', [RoutingController::class, 'secondLevel'])->name('second');
     Route::get('{any}', [RoutingController::class, 'root'])->name('any');
