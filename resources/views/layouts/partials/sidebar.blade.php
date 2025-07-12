@@ -43,10 +43,11 @@
                     </a>
                     <div class="collapse" id="sidebarProduct">
                         <ul class="nav-second-level">
-                            <li><a href="{{ route('second', ['product', 'categories']) }}" class="tp-link">Categories</a></li>
-                            <li><a href="{{ route('second', ['product', '']) }}" class="tp-link">Products</a></li>
-                            <li><a href="{{ route('second', ['product', 'units']) }}" class="tp-link">Units</a></li>
-                            <li><a href="{{ route('second', ['product', 'brands']) }}" class="tp-link">Brands</a></li>
+                            <li><a href="{{ route('second', ['products', 'categories']) }}"
+                                    class="tp-link">Categories</a></li>
+                            <li><a href="{{ route('second', ['products', '']) }}" class="tp-link">Products</a></li>
+                            <li><a href="{{ route('second', ['products', 'units']) }}" class="tp-link">Units</a></li>
+                            <li><a href="{{ route('second', ['products', 'brands']) }}" class="tp-link">Brands</a></li>
                         </ul>
                     </div>
                 </li>
@@ -61,17 +62,24 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('second', ['sales', '']) }}" class="tp-link">
-                        <i data-feather="dollar-sign"></i>
+                    <a href="#sidebarSales" data-bs-toggle="collapse">
+                        <i data-feather="box"></i>
                         <span> Sales </span>
+                        <span class="menu-arrow"></span>
                     </a>
+                    <div class="collapse" id="sidebarSales">
+                        <ul class="nav-second-level">
+                            <li><a href="{{ route('second', ['sales', '']) }}" class="tp-link">Sales</a></li>
+
+                            <li><a href="{{ route('sale-returns.index') }}" class="tp-link">Return Sales</a>
+                            </li>
+
+                        </ul>
+                    </div>
                 </li>
-                <li>
-                    <a href="{{ route('second', ['sales', 'returns']) }}" class="tp-link">
-                        <i data-feather="rotate-ccw"></i>
-                        <span> Returns </span>
-                    </a>
-                </li>
+
+
+
                 <li>
                     <a href="{{ route('second', ['inventory', 'transactions']) }}" class="tp-link">
                         <i data-feather="database"></i>
