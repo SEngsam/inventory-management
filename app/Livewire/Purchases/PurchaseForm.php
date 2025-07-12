@@ -6,7 +6,6 @@ use Livewire\Component;
 use App\Models\Supplier;
 use App\Models\Product;
 use App\Models\Purchase;
-use App\Models\PurchaseItem;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 
@@ -24,17 +23,16 @@ class PurchaseForm extends Component
     public $products;
     public $items = [];
 
-    public function mount(?Purchase $purchase= null)
+    public function mount($id = null)
     {
         $this->suppliers = Supplier::all();
         $this->products = Product::all();
 
-        if ($purchase && $purchase->exists) {
-        $this->purchaseId = $purchase->id;
-
-            $purchase = Purchase::with('items')->findOrFail($this->purchaseId);
+        if ($id) {
+            $purchase = Purchase::with('items')->findOrFail($id);
+            // تعديل موجود
+            $this->purchaseId = $purchase->id;
             $this->fill($purchase->only('supplier_id', 'purchase_date', 'reference_no', 'status', 'notes'));
-
             $this->items = $purchase->items->map(function ($item) {
                 return [
                     'product_id' => $item->product_id,
@@ -43,11 +41,13 @@ class PurchaseForm extends Component
                 ];
             })->toArray();
         } else {
+            // إنشاء جديد
             $this->reference_no = 'REF-' . strtoupper(Str::random(6));
             $this->purchase_date = Carbon::now()->format('Y-m-d');
             $this->items[] = ['product_id' => '', 'quantity' => 1, 'unit_cost' => 0];
         }
     }
+
 
     public function addItem()
     {
@@ -99,6 +99,7 @@ class PurchaseForm extends Component
         );
 
         if ($this->purchaseId) {
+            // تحديث المخزون: نطرح الكميات القديمة قبل تحديث العناصر الجديدة
             foreach ($purchase->items as $oldItem) {
                 $oldItem->product->decrement('stock_quantity', $oldItem->quantity);
             }
@@ -110,8 +111,7 @@ class PurchaseForm extends Component
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'unit_cost' => $item['unit_cost'],
-                'total' => $totalAmount,
-
+                'total' => $item['quantity'] * $item['unit_cost'],
             ]);
 
             $product = Product::find($item['product_id']);
@@ -121,7 +121,7 @@ class PurchaseForm extends Component
         }
 
         session()->flash('message', $this->purchaseId ? 'Purchase updated!' : 'Purchase created!');
-        return redirect()->route('purchase.index');
+        return redirect()->route('purchases.index');
     }
 
     public function render()

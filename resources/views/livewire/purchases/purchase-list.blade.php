@@ -1,3 +1,16 @@
+<div>
+    <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+    <div class="flex-grow-1">
+        <h4 class="fs-18 fw-semibold m-0">Purchases</h4>
+    </div>
+
+    <div class="text-end">
+        <ol class="breadcrumb m-0 py-0">
+            <li class="breadcrumb-item"><a href="javascript: void(0);"> Purchases</a></li>
+            <li class="breadcrumb-item active">Purchases List</li>
+        </ol>
+    </div>
+</div>
 <div class="row">
     <div class="col-12">
 
@@ -18,9 +31,9 @@
 
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Purchase List</h5>
+                <h5 class="card-title mb-0">Purchases List</h5>
                 <div>
-                    <a href="{{ route('purchase.create') }}" class="btn btn-primary me-2">
+                    <a href="{{ route('purchases.create') }}" class="btn btn-primary me-2">
                         <i class="mdi mdi-plus"></i> Add
                     </a>
 
@@ -65,10 +78,10 @@
                                     </td>
                                     <td>{{ \Illuminate\Support\Str::limit($purchase->note, 40) }}</td>
                                     <td>
-                                        <a href="{{ route('purchase.show', $purchase->id) }}" title="View">
+                                        <a href="{{ route('purchases.show', $purchase->id) }}" title="View">
                                             <i class="mdi mdi-eye text-info fs-18 border rounded p-1 me-1"></i>
                                         </a>
-                                        <a href="{{ route('purchase.edit', $purchase->id) }}">
+                                        <a href="{{ route('purchases.edit', $purchase->id) }}">
                                             <i class="mdi mdi-pencil text-muted fs-18 rounded-2 border p-1 me-1"></i>
                                         </a>
                                     </td>
@@ -85,4 +98,6 @@
         </div>
 
     </div>
+</div>
+
 </div>

@@ -11,7 +11,11 @@ use App\Livewire\Products\ProductList;
 use App\Livewire\Products\BrandManager;
 use App\Livewire\Products\CategoryManager;
 use App\Livewire\Products\UnitManager;
+use App\Livewire\Purchases\PurchaseForm;
+use App\Livewire\Purchases\PurchaseList;
+use App\Livewire\Purchases\PurchaseShow;
 use App\Models\Customer;
+use App\Models\Purchase;
 use App\Models\Sale;
 use App\Models\SaleReturn;
 
@@ -24,14 +28,16 @@ Route::prefix('product')->name('product.')->group(function () {
 });
 
 Route::get('/products',  ProductList::class)->name('products.list');
-Route::get('/product/create', ProductForm::class)->name('product.create');
-Route::get('/product/{id}/edit', ProductForm::class)->name('product.edit');
+Route::get('/product/create', ProductForm::class)->name('products.create');
+Route::get('/product/{id}/edit', ProductForm::class)->name('products.edit');
 
-Route::get('/purchases', fn() => view('inventory.purchases.purchase-list'))->name('purchase.index');
-Route::get('/purchases/create', fn() => view('inventory.purchases.purchase-form'))->name('purchase.create');
-Route::get('/purchases/edit/{purchase}', fn($purchase) => view('inventory.purchases.purchase-form', ['purchase' => $purchase]))->name('purchase.edit');
+// Purchases
+Route::get('/purchases', PurchaseList::class)->name('purchases.index');
+Route::get('/purchases/create', PurchaseForm::class )->name('purchases.create');
+Route::get('/purchases/edit/{purchaseId}', PurchaseForm::class)->name('purchases.edit');
+Route::get('/purchases/{purchaseId}', PurchaseShow::class)->name('purchases.show');
 
-Route::get('/purchases/{purchase}', fn($purchase) => view('inventory.purchases.purchase-show', ['purchase' => $purchase]))->name('purchase.show');
+// Route::get('/purchases/{purchase}', fn($purchase) => view('inventory.purchases.purchase-show', ['purchase' => $purchase]))->name('purchases.show');
 
 
 Route::get('/suppliers', fn() => view('inventory.suppliers.supplier-list'))->name('suppliers.index');

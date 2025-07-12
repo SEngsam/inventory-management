@@ -35,7 +35,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Products List</h5>
                     <div>
-                        <a href="{{ route('product.create') }}" class="btn btn-primary me-2">
+                        <a href="{{ route('products.create') }}" class="btn btn-primary me-2">
                             <i class="mdi mdi-plus"></i> Add
                         </a>
 
@@ -82,7 +82,7 @@
                                         <td>{{ $product->category->name ?? '-' }}</td>
                                         <td>{{ number_format($product->price ?? $product->product_price, 2) }}</td>
                                         <td>
-                                            <a href="{{ route('product.edit', $product->id) }}">
+                                            <a href="{{ route('products.edit', $product->id) }}">
                                                 <i class="mdi mdi-pencil text-muted fs-18 rounded-2 border p-1 me-1"></i>
                                             </a>
                                         </td>
