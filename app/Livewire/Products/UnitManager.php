@@ -94,7 +94,7 @@ class UnitManager extends Component
     }
     public function render()
     {
-        return view('livewire.unit-manager', [
+        return view('livewire.products.unit-manager', [
             'units' => $this->units,
         ]);
     }

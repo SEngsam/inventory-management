@@ -119,6 +119,10 @@
 </div>
 
 <!-- Script -->
+
+
+</div>
+@push('script')
 <script>
     function showCategoryModal() {
         const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
@@ -145,5 +149,4 @@
         @endif
     });
 </script>
-
-</div>
+@endpush

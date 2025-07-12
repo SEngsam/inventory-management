@@ -22,21 +22,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Product Type</label>
-                                <input type="text" class="form-control" wire:model.defer="type">
-                                @error('type') <span class="text-danger">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Product Code</label>
-                                <input type="text" class="form-control" wire:model.defer="code">
-                                @error('code') <span class="text-danger">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div class="mb-3">
                                 <label class="form-label">Product Image</label><br>
-                                @if ($product_image && !$new_product_image)
-                                    <img src="{{ asset('storage/' . $product_image) }}" width="100"><br>
+                                @if ($image && !$new_product_image)
+                                    <img src="{{ asset('storage/' . $image) }}" width="100"><br>
                                 @endif
                                 <input type="file" wire:model="new_product_image">
                                 <div wire:loading wire:target="new_product_image">Uploading...</div>
@@ -65,17 +53,6 @@
                                 @error('brand_id') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Unit</label>
-                                <select class="form-select" wire:model.defer="unit_id">
-                                    <option value="">-- Select Unit --</option>
-                                    @foreach ($units as $unit)
-                                        <option value="{{ $unit->id }}">{{ $unit->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('unit_id') <span class="text-danger">{{ $message }}</span> @enderror
-                            </div>
-
                         </div>
 
                         <div class="col-lg-6">
@@ -96,9 +73,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Price</label>
-                                <input type="number" step="0.01" class="form-control" wire:model.defer="product_price">
-                                @error('product_price') <span class="text-danger">{{ $message }}</span> @enderror
+                                <label class="form-label">Price*</label>
+                                <input type="number" step="0.01" class="form-control" wire:model.defer="price">
+                                @error('price') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="mb-3">
@@ -107,10 +84,9 @@
                                 @error('warranty_period') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Guarantee</label>
-                                <input type="text" class="form-control" wire:model.defer="guarantee">
-                                @error('guarantee') <span class="text-danger">{{ $message }}</span> @enderror
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" wire:model.defer="guarantee" id="guarantee">
+                                <label class="form-check-label" for="guarantee">Has Guarantee</label>
                             </div>
 
                             <div class="mb-3">
@@ -130,17 +106,12 @@
                                 <label class="form-check-label" for="has_imei">Has IMEI / Serial Number</label>
                             </div>
 
-                            <div class="form-check mb-3">
-                                <input type="checkbox" class="form-check-input" wire:model.defer="not_for_selling" id="not_for_selling">
-                                <label class="form-check-label" for="not_for_selling">Not For Selling</label>
-                            </div>
-
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-end mt-4">
                         <button type="submit" class="btn btn-success me-2">{{ $productId ? 'Update' : 'Create' }}</button>
-                        <a href="{{ route('product.list') }}" class="btn btn-secondary">Cancel</a>
+                        <a href="{{ route('products.list') }}" class="btn btn-secondary">Cancel</a>
                     </div>
 
                 </form>

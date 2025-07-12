@@ -94,7 +94,7 @@ class BrandManager extends Component
 
     public function render()
     {
-        return view('livewire.brand-manager', [
+        return view('livewire.products.brand-manager', [
             'brands' => $this->brands,
         ]);
     }

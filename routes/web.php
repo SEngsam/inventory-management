@@ -6,9 +6,11 @@ use App\Livewire\DashboardPanel;
 use App\Livewire\Invoices\CreateInvoice;
 use App\Livewire\Invoices\InvoiceList;
 use App\Livewire\Invoices\InvoiceShow;
-use App\Livewire\ProductForm;
-use App\Livewire\ProductList;
+use App\Livewire\Products\ProductForm;
+use App\Livewire\Products\ProductList;
+use App\Livewire\Products\BrandManager;
 use App\Livewire\Products\CategoryManager;
+use App\Livewire\Products\UnitManager;
 use App\Models\Customer;
 use App\Models\Sale;
 use App\Models\SaleReturn;
@@ -16,18 +18,14 @@ use App\Models\SaleReturn;
 require __DIR__ . '/auth.php';
 
 Route::prefix('product')->name('product.')->group(function () {
-    Route::get('/units', function () {
-        return view('inventory.units');
-    });
+    Route::get('/units', UnitManager::class);
     Route::get('/categories', CategoryManager::class);
-    Route::get('/brands', function () {
-        return view('inventory.products.brands');
-    });
+    Route::get('/brands', BrandManager::class);
 });
 
-Route::get('/product',  fn() => view('inventory.products.product-list'))->name('product.list');
-Route::get('/product/create', fn() => view('inventory.products.product-form'))->name('product.create');
-Route::get('/products/{id}/edit', fn($id) => view('inventory.products.product-form', ['id' => $id]))->name('product.edit');
+Route::get('/products',  ProductList::class)->name('products.list');
+Route::get('/product/create', ProductForm::class)->name('product.create');
+Route::get('/product/{id}/edit', ProductForm::class)->name('product.edit');
 
 Route::get('/purchases', fn() => view('inventory.purchases.purchase-list'))->name('purchase.index');
 Route::get('/purchases/create', fn() => view('inventory.purchases.purchase-form'))->name('purchase.create');
