@@ -7,11 +7,12 @@ use Livewire\Component;
 
 class SaleShow extends Component
 {
-    public Sale $sale;
+    public $id;
+    public $sale;
 
-    public function mount(Sale $sale)
+    public function mount()
     {
-        $this->sale = $sale;
+        $this->sale = Sale::with('customer', 'items.product')->findOrFail($this->id);
     }
 
     public function render()

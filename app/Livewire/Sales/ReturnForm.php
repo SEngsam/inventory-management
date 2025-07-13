@@ -55,6 +55,7 @@ class ReturnForm extends Component
             'reference_no' => $this->reference_no,
             'return_date' => $this->return_date,
             'note' => $this->note,
+
         ]);
 
         foreach ($this->items as $item) {
@@ -63,9 +64,9 @@ class ReturnForm extends Component
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['unit_price'],
+                'total' => $item['quantity'] * $item['unit_price'],
             ]);
 
-            // Update stock
             Product::find($item['product_id'])?->increment('stock_quantity', $item['quantity']);
         }
 

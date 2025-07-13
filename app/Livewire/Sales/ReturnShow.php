@@ -11,11 +11,13 @@ class ReturnShow extends Component
 
     public function mount(SaleReturn $return)
     {
+
         $this->return = $return->load('sale.customer', 'items.product');
+
     }
 
     public function render()
     {
-        return view('livewire.sales.return-view');
+        return view('livewire.sales.return-show');
     }
 }

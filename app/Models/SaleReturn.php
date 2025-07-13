@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,7 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class SaleReturn extends Model
 {
     use HasFactory;
-    protected $fillable = ['sale_id', 'reference_no', 'return_date', 'note'];
+
+    protected $fillable = [
+        'sale_id',
+        'customer_id',
+        'reference_no',
+        'return_date',
+        'note',
+        'total',
+    ];
+
+    protected $with = ['items.product', 'customer', 'sale'];
+
 
     public function items()
     {

@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header">
-        <h5 class="card-title mb-0">{{ $sale ? 'Edit Sale' : 'New Sale' }}</h5>
+        <h5 class="card-title mb-0">{{ $saleId ? 'Edit Sale' : 'New Sale' }}</h5>
     </div>
 
     <div class="card-body">
@@ -97,7 +97,7 @@
             </div>
 
             <div class="text-end">
-                <button type="submit" class="btn btn-success">{{ $sale ? 'Update Sale' : 'Save Sale' }}</button>
+                <button type="submit" class="btn btn-success">{{ $saleId ? 'Update Sale' : 'Save Sale' }}</button>
             </div>
         </form>
     </div>

@@ -6,21 +6,23 @@ use Livewire\Component;
 use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Sale;
+use App\Models\SaleItem;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class SaleForm extends Component
 {
     public $saleId;
-    public $sale;
     public $reference_no = '';
     public $sale_date = '';
     public $status = 'completed';
     public $note = '';
     public $customer_id;
-    public $customers;
-    public $products;
     public $items = [];
+
+    public $products;
+    public $customers;
 
     public function mount($id = null)
     {
@@ -30,7 +32,6 @@ class SaleForm extends Component
         if ($id) {
             $sale = Sale::with('items')->findOrFail($id);
             $this->saleId = $sale->id;
-            $this->sale = $sale;
 
             $this->reference_no = $sale->reference_no;
             $this->sale_date = optional($sale->sale_date)->format('Y-m-d');
@@ -93,56 +94,46 @@ class SaleForm extends Component
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        if ($this->status === 'completed') {
-            foreach ($this->items as $index => $item) {
-                $product = Product::find($item['product_id']);
-                $oldQty = 0;
+        DB::transaction(function () {
+            $sale = Sale::updateOrCreate(
+                ['id' => $this->saleId],
+                [
+                    'reference_no' => $this->reference_no,
+                    'sale_date' => $this->sale_date,
+                    'status' => $this->status,
+                    'note' => $this->note,
+                    'customer_id' => $this->customer_id,
+                ]
+            );
 
-                if ($this->sale) {
-                    $existing = $this->sale->items->where('product_id', $item['product_id'])->first();
-                    $oldQty = $existing?->quantity ?? 0;
+
+            if ($this->saleId) {
+                $sale->items()->delete();
+            }
+
+            foreach ($this->items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+
+
+                if ($this->status === 'completed') {
+                    if ($product->quantity < $item['quantity']) {
+                        throw new \Exception("الكمية المتوفرة للمنتج {$product->name} غير كافية.");
+                    }
+
+                    $product->quantity -= $item['quantity'];
+                    $product->save();
                 }
 
-                $change = $item['quantity'] - $oldQty;
-                if ($product->stock_quantity < $change) {
-                    $this->addError("items.$index.quantity", 'Insufficient stock for ' . $product->name);
-                    return;
-                }
+                $sale->items()->create([
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                ]);
             }
-        }
+        });
 
-        $data = [
-            'reference_no' => $this->reference_no,
-            'sale_date' => $this->sale_date,
-            'status' => $this->status,
-            'note' => $this->note,
-            'customer_id' => $this->customer_id,
-        ];
-
-        $sale = Sale::updateOrCreate(['id' => $this->saleId], $data);
-
-        if ($this->saleId) {
-            foreach ($sale->items as $oldItem) {
-                Product::find($oldItem->product_id)?->increment('stock_quantity', $oldItem->quantity);
-            }
-            $sale->items()->delete();
-        }
-
-        foreach ($this->items as $item) {
-            $sale->items()->create([
-                'product_id' => $item['product_id'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['unit_price'],
-                'total' => $item['quantity'] * $item['unit_price'],
-            ]);
-
-            if ($this->status === 'completed') {
-                Product::find($item['product_id'])?->decrement('stock_quantity', $item['quantity']);
-            }
-        }
-
-        session()->flash('message', $this->saleId ? 'Sale updated successfully!' : 'Sale created successfully!');
-        return redirect()->route('sales.index');
+        session()->flash('success', 'Invoice was saved successfully.');
+        return redirect()->route('sales.list');
     }
 
     public function render()

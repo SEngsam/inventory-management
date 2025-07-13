@@ -68,6 +68,8 @@
                             </tbody>
                         </table>
                     </div>
+                        {{ $sales->links() }}
+
                 </div>
             </div>
         </div>

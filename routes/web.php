@@ -78,8 +78,8 @@ Route::middleware(['auth'])->group(function () {
     // Sales
     Route::get('/sales', SaleList::class)->name('sales.index');
     Route::get('/sales/create', SaleForm::class)->name('sales.create');
-    Route::get('/sales/edit/{sale}', SaleForm::class)->name('sales.edit');
-    Route::get('/sales/{sale}', SaleShow::class)->name('sales.show');
+    Route::get('/sales/edit/{id}', SaleForm::class)->name('sales.edit');
+    Route::get('/sales/{id}', SaleShow::class)->name('sales.show');
 
     // Sale Returns
 

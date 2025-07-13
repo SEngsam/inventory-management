@@ -1,25 +1,42 @@
 <?php
+
 namespace App\Livewire\Sales;
 
 use Livewire\Component;
 use App\Models\Sale;
+use Livewire\WithPagination;
 
 class SaleList extends Component
 {
-    public $sales;
+    use WithPagination;
 
-    public function mount()
-    {
-        $this->loadSales();
-    }
+    protected $paginationTheme = 'bootstrap';
 
-    public function loadSales()
+    public function delete($id)
     {
-        $this->sales = Sale::withCount('items')->latest()->get();
+        $sale = Sale::findOrFail($id);
+
+        if ($sale->status === 'completed') {
+            foreach ($sale->items as $item) {
+                $product = $item->product;
+                $product->quantity += $item->quantity;
+                $product->save();
+            }
+        }
+
+        $sale->items()->delete();
+        $sale->delete();
+
+        session()->flash('success', 'Invoice Successfully Deleted');
+        $this->resetPage();
     }
 
     public function render()
     {
-        return view('livewire.sales.sale-list');
+        return view('livewire.sales.sale-list', [
+            'sales' => Sale::with('customer', 'items')
+                ->latest()
+                ->paginate(10),
+        ]);
     }
 }

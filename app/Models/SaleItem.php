@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class SaleItem extends Model
 {
     use HasFactory;
-        protected $fillable = ['sale_id', 'product_id', 'quantity', 'unit_price', 'total'];
+
+    protected $fillable = ['sale_id', 'product_id', 'quantity', 'unit_price', 'total'];
 
     public function sale()
     {
@@ -20,4 +21,8 @@ class SaleItem extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function getTotalAttribute()
+    {
+        return $this->unit_price * $this->quantity;
+    }
 }
