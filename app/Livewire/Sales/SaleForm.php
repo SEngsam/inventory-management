@@ -81,60 +81,65 @@ class SaleForm extends Component
         }
     }
 
-    public function save()
-    {
-        $this->validate([
-            'reference_no' => 'required|string|unique:sales,reference_no' . ($this->saleId ? ',' . $this->saleId : ''),
-            'sale_date' => 'required|date',
-            'status' => 'required|in:pending,completed,cancelled',
-            'customer_id' => 'nullable|exists:customers,id',
-            'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
-        ]);
+public function save()
+{
+    $this->validate([
+        'reference_no' => 'required|string|unique:sales,reference_no' . ($this->saleId ? ',' . $this->saleId : ''),
+        'sale_date' => 'required|date',
+        'status' => 'required|in:pending,completed,cancelled',
+        'customer_id' => 'nullable|exists:customers,id',
+        'items' => 'required|array|min:1',
+        'items.*.product_id' => 'required|exists:products,id',
+        'items.*.quantity' => 'required|integer|min:1',
+        'items.*.unit_price' => 'required|numeric|min:0',
+    ]);
 
-        DB::transaction(function () {
-            $sale = Sale::updateOrCreate(
-                ['id' => $this->saleId],
-                [
-                    'reference_no' => $this->reference_no,
-                    'sale_date' => $this->sale_date,
-                    'status' => $this->status,
-                    'note' => $this->note,
-                    'customer_id' => $this->customer_id,
-                ]
-            );
+    DB::transaction(function () {
+        $sale = Sale::updateOrCreate(
+            ['id' => $this->saleId],
+            [
+                'reference_no' => $this->reference_no,
+                'sale_date' => $this->sale_date,
+                'status' => $this->status,
+                'note' => $this->note,
+                'customer_id' => $this->customer_id,
+            ]
+        );
 
+        if ($this->saleId) {
+            // Delete old sale items if editing
+            $sale->items()->delete();
+        }
 
-            if ($this->saleId) {
-                $sale->items()->delete();
-            }
+        foreach ($this->items as $item) {
+            $product = Product::findOrFail($item['product_id']);
 
-            foreach ($this->items as $item) {
-                $product = Product::findOrFail($item['product_id']);
-
-
-                if ($this->status === 'completed') {
-                    if ($product->quantity < $item['quantity']) {
-                        throw new \Exception("الكمية المتوفرة للمنتج {$product->name} غير كافية.");
-                    }
-
-                    $product->quantity -= $item['quantity'];
-                    $product->save();
+            if ($this->status === 'completed') {
+                // Check stock availability before deducting
+                if ($product->stock_quantity < $item['quantity']) {
+                    throw new \Exception("The available quantity for product {$product->name} is insufficient.");
                 }
 
-                $sale->items()->create([
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                ]);
+                // Deduct quantity from product stock
+                $product->stock_quantity -= $item['quantity'];
+                $product->save();
             }
-        });
 
-        session()->flash('success', 'Invoice was saved successfully.');
-        return redirect()->route('sales.list');
-    }
+            // Calculate total for the sale item
+            $total = $item['quantity'] * $item['unit_price'];
+
+            $sale->items()->create([
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['unit_price'],
+                'total' => $total,  // Important to include total to avoid SQL error
+            ]);
+        }
+    });
+
+    session()->flash('success', 'Invoice was saved successfully.');
+    return redirect()->route('sales.index');
+}
 
     public function render()
     {

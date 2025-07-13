@@ -266,7 +266,7 @@ var options = {
     colors: ["#537AEF"],
     series: [{
         name: 'Sales',
-        data: [145, 96, 108, 140, 130, 150, 170, 138, 114, 128, 138]
+        data: monthlySalesData
     }],
     fill: {
         opacity: 1,
@@ -298,7 +298,7 @@ var options = {
     },
     xaxis: {
         type: 'datetime',
-        categories: ['01/01/2024', '02/01/2024', '03/01/2024', '04/01/2024', '05/01/2024', '06/01/2024', '07/01/2024', '08/01/2024', '09/01/2024', '10/01/2024', '11/01/2024'],
+        categories:monthlySalesLabels,
         axisTicks: {
             color: "#f0f4f7",
         },
@@ -311,6 +311,12 @@ var options = {
                 fontWeight: 600,
             }
         },
+         tickAmount: 10,
+              labels: {
+            formatter: function (val) {
+                return val == 0 ? 0 : parseFloat(val.toFixed(2)); // optional cleaner
+            }
+        }
     },
     tooltip: {
         theme: 'light'

@@ -10,7 +10,14 @@ class SaleItem extends Model
     use HasFactory;
 
     protected $fillable = ['sale_id', 'product_id', 'quantity', 'unit_price', 'total'];
+    protected static function boot()
+    {
+        parent::boot();
 
+        static::creating(function ($item) {
+            $item->total = $item->unit_price * $item->quantity;
+        });
+    }
     public function sale()
     {
         return $this->belongsTo(Sale::class);

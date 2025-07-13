@@ -1,6 +1,3 @@
-@extends('layouts.vertical', ['title' => 'Dashboard'])
-
-@section('content')
 <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
     <div class="flex-grow-1">
         <h4 class="fs-18 fw-semibold m-0">Dashboard</h4>
@@ -45,7 +42,8 @@
                             <div class="me-auto">
                                 <span class="text-danger d-inline-flex align-items-center">
                                     10%
-                                    <i data-feather="trending-down" class="ms-1" style="height: 22px; width: 22px;"></i>
+                                    <i data-feather="trending-down" class="ms-1"
+                                        style="height: 22px; width: 22px;"></i>
                                 </span>
                             </div>
                         </div>
@@ -273,7 +271,8 @@
                                 <td>
                                     /home
                                     <a href="#" class="ms-1" aria-label="Open website">
-                                        <i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
+                                        <i data-feather="link" class="ms-1 text-primary"
+                                            style="height: 15px; width: 15px;"></i>
                                     </a>
                                 </td>
                                 <td>5,896</td>
@@ -288,7 +287,8 @@
                                 <td>
                                     /about.html
                                     <a href="#" class="ms-1" aria-label="Open website">
-                                        <i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
+                                        <i data-feather="link" class="ms-1 text-primary"
+                                            style="height: 15px; width: 15px;"></i>
                                     </a>
                                 </td>
                                 <td>3,898</td>
@@ -303,7 +303,8 @@
                                 <td>
                                     /index.html
                                     <a href="#" class="ms-1" aria-label="Open website">
-                                        <i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
+                                        <i data-feather="link" class="ms-1 text-primary"
+                                            style="height: 15px; width: 15px;"></i>
                                     </a>
                                 </td>
                                 <td>3,057</td>
@@ -318,7 +319,8 @@
                                 <td>
                                     /invoice.html
                                     <a href="#" class="ms-1" aria-label="Open website">
-                                        <i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
+                                        <i data-feather="link" class="ms-1 text-primary"
+                                            style="height: 15px; width: 15px;"></i>
                                     </a>
                                 </td>
                                 <td>867</td>
@@ -333,7 +335,8 @@
                                 <td>
                                     /docs/
                                     <a href="#" class="ms-1" aria-label="Open website">
-                                        <i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
+                                        <i data-feather="link" class="ms-1 text-primary"
+                                            style="height: 15px; width: 15px;"></i>
                                     </a>
                                 </td>
                                 <td>958</td>
@@ -348,7 +351,8 @@
                                 <td>
                                     /service.html
                                     <a href="#" class="ms-1" aria-label="Open website">
-                                        <i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
+                                        <i data-feather="link" class="ms-1 text-primary"
+                                            style="height: 15px; width: 15px;"></i>
                                     </a>
                                 </td>
                                 <td>658</td>
@@ -363,7 +367,8 @@
                                 <td>
                                     /analytical.html
                                     <a href="#" class="ms-1" aria-label="Open website">
-                                        <i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
+                                        <i data-feather="link" class="ms-1 text-primary"
+                                            style="height: 15px; width: 15px;"></i>
                                     </a>
                                 </td>
                                 <td>457</td>
@@ -384,7 +389,7 @@
 </div>
 @endsection
 
-@section('script')
-    <script src="https://apexcharts.com/samples/assets/stock-prices.js"></script>
-    @vite(['resources/js/pages/analytics-dashboard.init.js'])
-@endsection
+@push('script')
+<script src="https://apexcharts.com/samples/assets/stock-prices.js"></script>
+@vite(['resources/js/pages/analytics-dashboard.init.js'])
+@endpush

@@ -69,7 +69,7 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::get('/products', ProductList::class)->name('products.list');
     Route::get('/products/create', ProductForm::class)->name('products.create');
-    Route::get('/products/{id}/edit', ProductForm::class)->name('products.edit');
+    Route::get('/products/edit/{product}', ProductForm::class)->name('products.edit');
 
     // Purchases
     Route::get('/purchases', PurchaseList::class)->name('purchases.index');

@@ -4,88 +4,84 @@ namespace App\Livewire\Products;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
-use App\Models\Product;
+use App\Models\Unit;
+use Illuminate\Support\Str;
 
 class ProductForm extends Component
 {
     use WithFileUploads;
 
     public $productId;
-    public $name, $price, $description;
-    public $order_tax, $tax_type = 'percent';
-    public $stock_quantity, $threshold_stock = 5;
-    public $image, $new_product_image;
-    public $category_id, $brand_id;
+    public $name, $sku, $code, $type = 'standard';
+    public $price, $description, $order_tax, $tax_type = 'percent';
+    public $stock_quantity = 0, $category_id, $brand_id, $unit_id;
     public $warranty_period, $guarantee = false, $guarantee_period;
-    public $has_imei = false;
+    public $has_imei = false, $image, $new_product_image;
 
-    public $categories = [], $brands = [];
+    public $categories = [];
+    public $brands = [];
+    public $units = [];
 
-    public function mount($id = null)
+    public function mount($product = null)
     {
+        $this->productId = $product;
         $this->categories = Category::all();
         $this->brands = Brand::all();
-
-        if ($id) {
-            $product = Product::findOrFail($id);
-
-            $this->productId = $product->id;
-            $this->name = $product->name;
-            $this->price = $product->price;
-            $this->description = $product->description;
-            $this->order_tax = $product->order_tax;
-            $this->tax_type = $product->tax_type;
-            $this->stock_quantity = $product->stock_quantity;
-            $this->threshold_stock = $product->threshold_stock;
+        $this->units = Unit::all();
+        if ($product) {
+            $product = Product::findOrFail($product);
+            $this->fill($product->toArray());
             $this->image = $product->image;
-            $this->category_id = $product->category_id;
-            $this->brand_id = $product->brand_id;
-            $this->warranty_period = $product->warranty_period;
-            $this->guarantee = $product->guarantee;
-            $this->guarantee_period = $product->guarantee_period;
-            $this->has_imei = $product->has_imei;
         }
+    }
+
+    public function rules()
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'sku' => 'required|string|unique:products,sku,' . $this->productId,
+            'code' => 'nullable|string|max:255',
+            'type' => 'required|in:standard,service',
+            'price' => 'required|numeric|min:0',
+            'order_tax' => 'nullable|numeric|min:0',
+            'tax_type' => 'required|in:percent,fixed',
+            'stock_quantity' => 'nullable|integer|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'unit_id' => 'nullable|exists:units,id',
+            'warranty_period' => 'nullable|string',
+            'guarantee' => 'boolean',
+            'guarantee_period' => 'nullable|string',
+            'has_imei' => 'boolean',
+            'description' => 'nullable|string',
+            'new_product_image' => 'nullable|image|max:2048',
+        ];
     }
 
     public function save()
     {
-        $this->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
-            'order_tax' => 'nullable|numeric',
-            'tax_type' => 'required|in:percent,fixed',
-            'new_product_image' => $this->productId ? 'nullable|image|max:2048' : 'required|image|max:2048',
+        $this->validate();
+
+        $data = $this->only([
+            'name', 'sku', 'code', 'type', 'price', 'description',
+            'order_tax', 'tax_type', 'stock_quantity', 'category_id',
+            'brand_id', 'unit_id', 'warranty_period', 'guarantee',
+            'guarantee_period', 'has_imei',
         ]);
 
-        $imagePath = $this->image;
+        $data['guarantee'] = $this->guarantee ? 1 : 0;
+        $data['has_imei'] = $this->has_imei ? 1 : 0;
+
         if ($this->new_product_image) {
-            $imagePath = $this->new_product_image->store('product_images', 'public');
+            $data['image'] = $this->new_product_image->store('product_images', 'public');
         }
 
-        $data = [
-            'name' => $this->name,
-            'price' => $this->price,
-            'description' => $this->description,
-            'order_tax' => $this->order_tax,
-            'tax_type' => $this->tax_type,
-            'stock_quantity' => $this->stock_quantity,
-            'threshold_stock' => $this->threshold_stock,
-            'image' => $imagePath,
-            'category_id' => $this->category_id,
-            'brand_id' => $this->brand_id,
-            'warranty_period' => $this->warranty_period,
-            'guarantee' => $this->guarantee,
-            'guarantee_period' => $this->guarantee_period,
-            'has_imei' => $this->has_imei,
-        ];
+        $product = Product::updateOrCreate(['id' => $this->productId], $data);
 
-        Product::updateOrCreate(['id' => $this->productId], $data);
-
-        session()->flash('message', $this->productId ? 'Product updated successfully.' : 'Product created successfully.');
+        session()->flash('message', $this->productId ? 'Product updated successfully!' : 'Product created successfully!');
         return redirect()->route('products.list');
     }
 

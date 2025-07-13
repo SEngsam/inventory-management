@@ -70,8 +70,8 @@
                                                 value="{{ $product->id }}" />
                                         </td>
                                         <td>
-                                            @if ($product->product_image)
-                                                <img src="{{ asset('storage/' . $product->product_image) }}"
+                                            @if ($product->image)
+                                                <img src="{{ asset('storage/' . $product->image) }}"
                                                     width="40" height="40" class="rounded-circle" />
                                             @else
                                                 <span class="text-muted">No image</span>

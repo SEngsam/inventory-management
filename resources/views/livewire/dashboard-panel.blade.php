@@ -63,7 +63,8 @@
                             </div>
 
                             <div class="d-flex align-items-baseline mb-2">
-                                <div class="fs-22 mb-0 me-2 fw-semibold text-black">${{ number_format($salesTotal, 2) }}</div>
+                                <div class="fs-22 mb-0 me-2 fw-semibold text-black">${{ number_format($salesTotal, 2) }}
+                                </div>
                                 <div class="me-auto">
                                     <span class="text-success d-inline-flex align-items-center">
                                         25%
@@ -85,7 +86,8 @@
                             </div>
 
                             <div class="d-flex align-items-baseline mb-2">
-                                <div class="fs-22 mb-0 me-2 fw-semibold text-black"> ${{ number_format($returnsTotal, 2) }}</div>
+                                <div class="fs-22 mb-0 me-2 fw-semibold text-black">
+                                    ${{ number_format($returnsTotal, 2) }}</div>
                                 <div class="me-auto">
                                     <span class="text-success d-inline-flex align-items-center">
                                         4%
@@ -129,121 +131,100 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <div class="border border-dark rounded-2 me-2 widget-icons-sections">
-                            <i data-feather="tablet" class="widgets-icons"></i>
+                            <i data-feather="shopping-cart" class="widgets-icons"></i>
                         </div>
-                        <h5 class="card-title mb-0">Best Traffic Source</h5>
+                        <h5 class="card-title mb-0">Top Selling Products</h5>
                     </div>
                 </div>
 
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-traffic mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Sales</th>
+                                    <th colspan="2">Share</th>
+                                </tr>
+                            </thead>
                             <tbody>
-                                <thead>
+                                @php
+                                    $maxQuantity = collect($topSellingProducts)->max('quantity') ?: 1;
+                                @endphp
+                                @foreach ($topSellingProducts as $product)
+                                    @php
+                                        $percentage = round(($product['quantity'] / $maxQuantity) * 100, 2);
+                                    @endphp
                                     <tr>
-                                        <th>Network</th>
-                                        <th colspan="2">Visitors</th>
+                                        <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;"
+                                            title="{{ $product['name'] }}">
+                                            {{ $product['name'] }}
+                                        </td>
+                                        <td>{{ $product['quantity'] }}</td>
+                                        <td class="w-50">
+                                            <div class="progress progress-md mt-0">
+                                                <div class="progress-bar bg-primary"
+                                                    style="width: {{ $percentage }}%"></div>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-
-                                <tr>
-                                    <td>Instagram</td>
-                                    <td>3,550</td>
-                                    <td class="w-50">
-                                        <div class="progress progress-md mt-0">
-                                            <div class="progress-bar bg-danger" style="width: 80.0%"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>Facebook</td>
-                                    <td>1,245</td>
-                                    <td class="w-50">
-                                        <div class="progress progress-md mt-0">
-                                            <div class="progress-bar bg-primary" style="width: 55.9%"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>Twitter</td>
-                                    <td>1,798</td>
-                                    <td class="w-50">
-                                        <div class="progress progress-md mt-0">
-                                            <div class="progress-bar bg-secondary" style="width: 67.0%"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>YouTube</td>
-                                    <td>986</td>
-                                    <td class="w-50">
-                                        <div class="progress progress-md mt-0">
-                                            <div class="progress-bar bg-success" style="width: 38.72%"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>Pinterest</td>
-                                    <td>854</td>
-                                    <td class="w-50">
-                                        <div class="progress progress-md mt-0">
-                                            <div class="progress-bar bg-danger" style="width: 45.08%"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>Linkedin</td>
-                                    <td>650</td>
-                                    <td class="w-50">
-                                        <div class="progress progress-md mt-0">
-                                            <div class="progress-bar bg-warning" style="width: 68.0%"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>Nextdoor</td>
-                                    <td>420</td>
-                                    <td class="w-50">
-                                        <div class="progress progress-md mt-0">
-                                            <div class="progress-bar bg-info" style="width: 56.4%"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-
+                                @endforeach
                             </tbody>
+
                         </table>
                     </div>
                 </div>
 
             </div>
         </div>
+
     </div>
     <!-- End Monthly Sales -->
 
     <div class="row">
         <div class="col-md-6 col-xl-6">
-            <div class="card">
+            <div class="card overflow-hidden">
 
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <div class="border border-dark rounded-2 me-2 widget-icons-sections">
-                            <i data-feather="minus-square" class="widgets-icons"></i>
+                            <i data-feather="rotate-ccw" class="widgets-icons"></i>
                         </div>
-                        <h5 class="card-title mb-0">Audiences By Time Of Day</h5>
+                        <h5 class="card-title mb-0">Recent Returns</h5>
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <div id="audiences-daily" class="apex-charts mt-n3"></div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-traffic mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Reference No</th>
+                                    <th>Return Date</th>
+                                    <th>Customer</th>
+                                    <th>Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($recentReturns as $return)
+                                    <tr>
+                                        <td>{{ $return->reference_no }}</td>
+                                        <td>{{ $return->return_date->format('Y-m-d') }}</td>
+                                        <td>{{ $return->customer?->name ?? 'N/A' }}</td>
+                                        <td>${{ number_format($return->total, 2) }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">No recent returns found.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
             </div>
+
         </div>
 
         <div class="col-md-6 col-xl-6">
@@ -252,148 +233,73 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <div class="border border-dark rounded-2 me-2 widget-icons-sections">
-                            <i data-feather="table" class="widgets-icons"></i>
+                            <i data-feather="dollar-sign" class="widgets-icons"></i>
                         </div>
-                        <h5 class="card-title mb-0">Most Visited Pages</h5>
+                        <h5 class="card-title mb-0">Recent Sales</h5>
                     </div>
                 </div>
 
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-traffic mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Ref No</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
                             <tbody>
-
-                                <thead>
+                                @forelse ($recentSales as $sale)
                                     <tr>
-                                        <th>Page name</th>
-                                        <th>Visitors</th>
-                                        <th>Unique</th>
-                                        <th colspan="2">Bounce rate</th>
+                                        <td>
+                                            <a href="{{ route('sales.show', $sale->id) }}" class="text-primary">
+                                                {{ $sale->reference_no }}
+                                            </a>
+                                        </td>
+                                        <td>{{ $sale->customer?->name ?? 'Walk-in' }}</td>
+                                        <td>{{ $sale->sale_date->format('d M Y') }}</td>
+                                        <td class="text-end">
+                                            ${{ number_format($sale->items->sum('total'), 2) }}
+                                        </td>
                                     </tr>
-                                </thead>
-
-                                <tr>
-                                    <td>
-                                        /home
-                                        <a href="#" class="ms-1" aria-label="Open website">
-                                            <i data-feather="link" class="ms-1 text-primary"
-                                                style="height: 15px; width: 15px;"></i>
-                                        </a>
-                                    </td>
-                                    <td>5,896</td>
-                                    <td>3,654</td>
-                                    <td>82.54%</td>
-                                    <td class="w-25">
-                                        <div id="sparkline-bounce-1" class="apex-charts"></div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        /about.html
-                                        <a href="#" class="ms-1" aria-label="Open website">
-                                            <i data-feather="link" class="ms-1 text-primary"
-                                                style="height: 15px; width: 15px;"></i>
-                                        </a>
-                                    </td>
-                                    <td>3,898</td>
-                                    <td>3,450</td>
-                                    <td>76.29%</td>
-                                    <td class="w-25">
-                                        <div id="sparkline-bounce-2" class="apex-charts"></div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        /index.html
-                                        <a href="#" class="ms-1" aria-label="Open website">
-                                            <i data-feather="link" class="ms-1 text-primary"
-                                                style="height: 15px; width: 15px;"></i>
-                                        </a>
-                                    </td>
-                                    <td>3,057</td>
-                                    <td>2,589</td>
-                                    <td>72.68%</td>
-                                    <td class="w-25">
-                                        <div id="sparkline-bounce-3" class="apex-charts"></div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        /invoice.html
-                                        <a href="#" class="ms-1" aria-label="Open website">
-                                            <i data-feather="link" class="ms-1 text-primary"
-                                                style="height: 15px; width: 15px;"></i>
-                                        </a>
-                                    </td>
-                                    <td>867</td>
-                                    <td>795</td>
-                                    <td>44.78%</td>
-                                    <td class="w-25">
-                                        <div id="sparkline-bounce-4" class="apex-charts"></div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        /docs/
-                                        <a href="#" class="ms-1" aria-label="Open website">
-                                            <i data-feather="link" class="ms-1 text-primary"
-                                                style="height: 15px; width: 15px;"></i>
-                                        </a>
-                                    </td>
-                                    <td>958</td>
-                                    <td>801</td>
-                                    <td>41.15%</td>
-                                    <td class="w-25">
-                                        <div id="sparkline-bounce-5" class="apex-charts"></div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        /service.html
-                                        <a href="#" class="ms-1" aria-label="Open website">
-                                            <i data-feather="link" class="ms-1 text-primary"
-                                                style="height: 15px; width: 15px;"></i>
-                                        </a>
-                                    </td>
-                                    <td>658</td>
-                                    <td>589</td>
-                                    <td>32.65%</td>
-                                    <td class="w-25">
-                                        <div id="sparkline-bounce-6" class="apex-charts"></div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        /analytical.html
-                                        <a href="#" class="ms-1" aria-label="Open website">
-                                            <i data-feather="link" class="ms-1 text-primary"
-                                                style="height: 15px; width: 15px;"></i>
-                                        </a>
-                                    </td>
-                                    <td>457</td>
-                                    <td>859</td>
-                                    <td>32.65%</td>
-                                    <td class="w-25">
-                                        <div id="sparkline-bounce-7" class="apex-charts"></div>
-                                    </td>
-                                </tr>
-
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No recent sales found.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-            </div>
+            </div </div>
         </div>
     </div>
-</div>
-@push('script')
-    <script src="https://apexcharts.com/samples/assets/stock-prices.js"></script>
-    @vite(['resources/js/pages/analytics-dashboard.init.js'])
-@endpush('script')
+    @push('script')
+        @php
+            $formattedMonthlySales = array_map(
+                fn($v) => (float) number_format($v, 2, '.', ''),
+                array_values($monthlySales),
+            );
+        @endphp
+
+
+
+        <script>
+            window.salesChartData = {
+                labels: @json(array_map(fn($m) => date('m/01/' . now()->year, strtotime(now()->year . "-$m-01")), array_keys($monthlySales))),
+                values: @json(array_values($monthlySales))
+            };
+
+            const monthlySalesData = @json(array_values($formattedMonthlySales));
+            console.log(monthlySalesData);
+            const monthlySalesLabels = @json(array_map(function ($month) {
+                    return date('m/01/Y', strtotime("2025-$month-01"));
+                }, array_keys($monthlySales)));
+        </script>
+
+        <script src="https://apexcharts.com/samples/assets/stock-prices.js"></script>
+        @vite(['resources/js/pages/analytics-dashboard.init.js'])
+    @endpush
