@@ -44,8 +44,8 @@ require __DIR__ . '/auth.php';
 // Dashboard
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/users/roles', RoleManager::class)->name('admin.roles');
-    Route::get('/users/users', UserManager::class)->name('admin.users');
+    Route::get('/users/roles', RoleManager::class)->name('users.roles');
+    Route::get('/users', UserManager::class)->name('users.index');
 
 
 

@@ -34,6 +34,6 @@ class RoleManager extends Component
 
     public function render()
     {
-        return view('livewire.uesrs.role-manager');
+        return view('livewire.users.role-manager');
     }
 }
