@@ -7,6 +7,8 @@ use App\Livewire\Users\RoleManager;
 use App\Livewire\Users\UserManager;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
+use App\Livewire\Customers\CustomerForm;
+use App\Livewire\Customers\CustomerList;
 use App\Livewire\DashboardPanel;
 use App\Livewire\Invoices\CreateInvoice;
 use App\Livewire\Invoices\InvoiceList;
@@ -92,14 +94,12 @@ Route::middleware(['auth'])->group(function () {
     // Suppliers
     Route::get('/suppliers', SupplierList::class)->name('suppliers.index');
     Route::get('/suppliers/create', SupplierForm::class)->name('suppliers.create');
-    Route::get('/suppliers/edit/{supplier}', fn($supplier) => view('inventory.suppliers.supplier-form', ['supplier' => $supplier]))->name('supplier.edit');
+    Route::get('/suppliers/edit/{supplier}', SupplierForm::class)->name('supplier.edit');
 
     // Customers
-    Route::get('/customers', fn() => view('inventory.customers.customer-list'))->name('customer.index');
-    Route::get('/customers/create', fn() => view('inventory.customers.customer-form', ['customer' => null]))->name('customers.create');
-    Route::get('/customers/edit/{customer}', function (Customer $customer) {
-        return view('inventory.customers.customer-form', ['customer' => $customer]);
-    })->name('customer.edit');
+    Route::get('/customers',  CustomerList::class)->name('customer.index');
+    Route::get('/customers/create', CustomerForm::class)->name('customers.create');
+    Route::get('/customers/edit/{customer}', CustomerForm::class)->name('customer.edit');
 
     // Invoices
     Route::get('/invoices', InvoiceList::class)->name('invoices.index');

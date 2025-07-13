@@ -14,10 +14,10 @@ class SupplierForm extends Component
 
     protected $listeners = ['resetForm'];
 
-    public function mount($id = null)
+    public function mount($supplier = null)
     {
-        if ($id) {
-            $supplier = Supplier::findOrFail($id);
+        if ($supplier) {
+            $supplier = Supplier::findOrFail($supplier);
             $this->supplierId = $supplier->id;
             $this->supplier = $supplier;
 
