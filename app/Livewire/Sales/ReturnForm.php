@@ -37,6 +37,8 @@ class ReturnForm extends Component
                     'unit_price' => $item->unit_price,
                 ];
             })->toArray();
+        } else {
+            $this->items = [];
         }
     }
 
@@ -50,13 +52,27 @@ class ReturnForm extends Component
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
+        $sale = Sale::find($this->sale_id);
+        if (!$sale) {
+            session()->flash('error', 'Selected sale not found.');
+            return;
+        }
+
+        $total = 0;
+        foreach ($this->items as $item) {
+            $total += $item['quantity'] * $item['unit_price'];
+        }
+
         $return = SaleReturn::create([
             'sale_id' => $this->sale_id,
+            'customer_id' => $sale->customer_id,
             'reference_no' => $this->reference_no,
             'return_date' => $this->return_date,
             'note' => $this->note,
-
+            'total' => $total,
         ]);
+
+        $products = Product::whereIn('id', collect($this->items)->pluck('product_id'))->get()->keyBy('id');
 
         foreach ($this->items as $item) {
             SaleReturnItem::create([
@@ -67,11 +83,13 @@ class ReturnForm extends Component
                 'total' => $item['quantity'] * $item['unit_price'],
             ]);
 
-            Product::find($item['product_id'])?->increment('stock_quantity', $item['quantity']);
+            if (isset($products[$item['product_id']])) {
+                $products[$item['product_id']]->increment('stock_quantity', $item['quantity']);
+            }
         }
 
         session()->flash('message', 'Return saved successfully!');
-        return redirect()->route('sale-returns.create');
+        return redirect()->route('sale-returns.index');
     }
 
     public function render()

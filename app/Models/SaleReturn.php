@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +19,6 @@ class SaleReturn extends Model
     ];
 
     protected $with = ['items.product', 'customer', 'sale'];
-
 
     public function items()
     {
