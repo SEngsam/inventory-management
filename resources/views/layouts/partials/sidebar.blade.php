@@ -109,6 +109,24 @@
                     </a>
                 </li>
 
+                <!-- Settings -->
+                <li class="menu-title">Settings</li>
+                <li>
+                    <a href="#sidebarSettings" data-bs-toggle="collapse">
+                        <i data-feather="box"></i>
+                        <span> Settings </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarSettings">
+                        <ul class="nav-second-level">
+                            <li><a href="{{ route('settings.general') }}" class="tp-link">General Settings</a></li>
+                            <li><a href="{{ route('settings.currencies') }}" class="tp-link"> Currencies</a></li>
+
+                        </ul>
+                    </div>
+                </li>
+
+
                 <!-- Reporting -->
                 <li class="menu-title">Reports & Extras</li>
 
@@ -118,6 +136,7 @@
                         <span> Reports </span>
                     </a>
                 </li>
+
 
             </ul>
         </div>

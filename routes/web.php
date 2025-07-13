@@ -1,6 +1,8 @@
 <?php
 
 use App\Livewire\Sales\ReturnShow;
+use App\Livewire\Settings\ManageCurrencies;
+use App\Livewire\Settings\ManageSettings;
 use App\Livewire\Users\RoleManager;
 use App\Livewire\Users\UserManager;
 use Illuminate\Support\Facades\Route;
@@ -45,7 +47,13 @@ require __DIR__ . '/auth.php';
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/users/roles', RoleManager::class)->name('users.roles');
+
     Route::get('/users', UserManager::class)->name('users.index');
+    Route::prefix('settings')->group(function () {
+        Route::get('/', ManageSettings::class)->name('settings.general');
+
+        Route::get('/currencies', ManageCurrencies::class)->name('settings.currencies');
+    });
 
 
 

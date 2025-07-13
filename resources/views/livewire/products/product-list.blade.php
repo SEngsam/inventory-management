@@ -52,7 +52,7 @@
                             <thead>
                                 <tr>
                                     <th>
-                                        <input type="checkbox" wire:model="selectAll" />
+                                        <input class="form-check-input" type="checkbox" wire:model="selectAll" />
                                     </th>
                                     <th>Image</th>
                                     <th>Name</th>
@@ -66,7 +66,7 @@
                                 @forelse ($products as $product)
                                     <tr wire:key="product-{{ $product->id }}">
                                         <td>
-                                            <input type="checkbox" wire:model="selectedProducts"
+                                            <input class="form-check-input" type="checkbox" wire:model="selectedProducts"
                                                 value="{{ $product->id }}" />
                                         </td>
                                         <td>
