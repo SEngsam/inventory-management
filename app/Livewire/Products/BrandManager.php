@@ -22,7 +22,6 @@ class BrandManager extends Component
 
     public function mount()
     {
-        abort_unless(auth()->user()->can('products.brands.manage'), 403);
         $this->loadBrands();
     }
 
@@ -33,7 +32,6 @@ class BrandManager extends Component
 
     public function save()
     {
-        abort_unless(auth()->user()->can('products.brands.manage'), 403);
 
         $isUpdating = (bool) $this->brand_id;
 
@@ -76,7 +74,6 @@ class BrandManager extends Component
 
     public function edit($id)
     {
-        abort_unless(auth()->user()->can('products.brands.manage'), 403);
 
         $brand = Brand::findOrFail($id);
 
@@ -91,7 +88,6 @@ class BrandManager extends Component
 
     public function deleteSelected()
     {
-        abort_unless(auth()->user()->can('products.brands.manage'), 403);
 
         if (count($this->selectedBrands) > 0) {
             $brands = Brand::whereIn('id', $this->selectedBrands)->get();

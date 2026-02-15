@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Services\InvoiceService;
+use Illuminate\Validation\ValidationException;
 
 class CreateInvoice extends Component
 {
@@ -14,26 +15,21 @@ class CreateInvoice extends Component
     public $selectedCustomer;
     public $items = [];
 
-    public function mount()
+    public function mount(): void
     {
-        abort_unless(auth()->user()->can('invoices.create'), 403);
-
-        $this->customers = Customer::all();
-        $this->products  = Product::all();
-        $this->items[]   = ['product_id' => null, 'quantity' => 1];
-    }
-
-    public function addItem()
-    {
-        abort_unless(auth()->user()->can('invoices.create'), 403);
+        $this->customers = Customer::query()->orderBy('name')->get();
+        $this->products  = Product::query()->orderBy('name')->get();
 
         $this->items[] = ['product_id' => null, 'quantity' => 1];
     }
 
-    public function removeItem($index)
+    public function addItem(): void
     {
-        abort_unless(auth()->user()->can('invoices.create'), 403);
+        $this->items[] = ['product_id' => null, 'quantity' => 1];
+    }
 
+    public function removeItem(int $index): void
+    {
         unset($this->items[$index]);
         $this->items = array_values($this->items);
 
@@ -45,45 +41,98 @@ class CreateInvoice extends Component
     protected function rules(): array
     {
         return [
-            'selectedCustomer' => 'required|exists:customers,id',
-            'items' => 'required|array|min:1',
-            'items.*.product_id' => 'nullable|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
+            'selectedCustomer' => ['required', 'exists:customers,id'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.product_id' => ['required', 'exists:products,id'],
+            'items.*.quantity' => ['required', 'integer', 'min:1', 'max:100000'],
         ];
     }
 
     public function createInvoice()
     {
-        abort_unless(auth()->user()->can('invoices.create'), 403);
-
         $this->validate();
 
         $customer = Customer::findOrFail($this->selectedCustomer);
 
-        $items = [];
+        $merged = collect($this->items)
+            ->filter(fn ($row) => !empty($row['product_id']))
+            ->groupBy('product_id')
+            ->map(function ($rows) {
+                return (int) $rows->sum(fn ($r) => (int)($r['quantity'] ?? 1));
+            });
 
-        foreach ($this->items as $item) {
-            if (empty($item['product_id'])) {
-                continue;
-            }
-
-            $product = Product::findOrFail($item['product_id']);
-            $qty = (int) $item['quantity'];
-
-            $items[] = [
-                'product_id' => $product->id,
-                'quantity'   => $qty,
-                'price'      => $product->price,
-                'total'      => (float) $product->price * $qty,
-            ];
-        }
-
-        if (count($items) === 0) {
+        if ($merged->isEmpty()) {
             $this->addError('items', 'Please select at least one product.');
             return;
         }
 
-        $invoice = app(InvoiceService::class)->createFromSale($items, $customer);
+        $productIds = $merged->keys()->values();
+
+        $products = Product::query()
+            ->whereIn('id', $productIds)
+            ->get()
+            ->keyBy('id');
+
+        $lines = [];
+        $subtotal = 0.0;
+        $taxTotal = 0.0;
+
+        foreach ($merged as $pid => $qty) {
+            $product = $products->get((int)$pid);
+
+            if (!$product) {
+                throw ValidationException::withMessages([
+                    'items' => 'One or more selected products were not found.',
+                ]);
+            }
+
+            if ((int)$product->stock_quantity < (int)$qty) {
+                throw ValidationException::withMessages([
+                    'items' => "Insufficient stock for {$product->name}. Available: {$product->stock_quantity}, Requested: {$qty}",
+                ]);
+            }
+
+            $unitPrice = (float) $product->price;
+            $lineSub = $unitPrice * $qty;
+
+            $taxValue = $product->tax_value !== null ? (float) $product->tax_value : null;
+            $taxType  = $product->tax_type ?? 'percent';
+
+            $lineTax = 0.0;
+            if ($taxValue !== null) {
+                $lineTax = $taxType === 'percent'
+                    ? ($lineSub * ($taxValue / 100))
+                    : ($taxValue * $qty);  
+            }
+
+            $lineTotal = $lineSub + $lineTax;
+
+            $subtotal += $lineSub;
+            $taxTotal += $lineTax;
+
+            $lines[] = [
+                'product_id' => (int) $product->id,
+                'quantity'   => (int) $qty,
+
+                'unit_price' => round($unitPrice, 2),
+                'tax_value'  => $taxValue !== null ? round($taxValue, 2) : null,
+                'tax_type'   => $taxType,
+
+                'discount'   => 0,  
+
+                'line_tax'   => round($lineTax, 2),
+                'line_total' => round($lineTotal, 2),
+            ];
+        }
+
+        $payload = [
+            'customer_id' => $customer->id,
+            'issued_at'   => now(),
+            'status'      => 'issued',
+   
+        ];
+
+        $invoice = app(InvoiceService::class)->createFromSale($payload, $lines);
 
         return redirect()->route('invoices.show', $invoice->id);
     }

@@ -17,7 +17,6 @@ class SupplierForm extends Component
     public function mount($supplier = null)
     {
         if ($supplier) {
-            abort_unless(auth()->user()->can('suppliers.update'), 403);
 
             $supplier = Supplier::findOrFail($supplier);
             $this->supplierId = $supplier->id;
@@ -25,17 +24,12 @@ class SupplierForm extends Component
 
             $this->fill($supplier->only('name', 'email', 'phone', 'company', 'address', 'note'));
         } else {
-            abort_unless(auth()->user()->can('suppliers.create'), 403);
         }
     }
 
     public function save()
     {
-        if ($this->supplierId) {
-            abort_unless(auth()->user()->can('suppliers.update'), 403);
-        } else {
-            abort_unless(auth()->user()->can('suppliers.create'), 403);
-        }
+  
 
         $this->validate([
             'name' => 'required|string|max:255',

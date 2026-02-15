@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\InvoiceNumberService;
+use App\Services\SettingsService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,12 +13,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(SettingsService::class, function () {
+            return new SettingsService();
+        });
+        $this->app->singleton(InvoiceNumberService::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
+ 
     public function boot(): void
     {
         //

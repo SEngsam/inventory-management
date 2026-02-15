@@ -22,7 +22,6 @@ class SupplierList extends Component
 
     public function mount(): void
     {
-        abort_unless(auth()->user()->can('suppliers.view'), 403);
     }
 
     public function updatedSelectAll($value): void
@@ -40,7 +39,6 @@ class SupplierList extends Component
 
     public function deleteSelected(): void
     {
-        abort_unless(auth()->user()->can('suppliers.delete'), 403);
 
         if (!empty($this->selectedSuppliers)) {
             Supplier::whereIn('id', $this->selectedSuppliers)->delete();
@@ -54,7 +52,6 @@ class SupplierList extends Component
 
     public function delete($supplierId): void
     {
-        abort_unless(auth()->user()->can('suppliers.delete'), 403);
 
         $supplier = Supplier::find($supplierId);
         if ($supplier) {

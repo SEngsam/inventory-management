@@ -110,6 +110,7 @@
                 </li>
 
                 <!-- Settings -->
+                <!-- Settings -->
                 <li class="menu-title">Settings</li>
                 <li>
                     <a href="#sidebarSettings" data-bs-toggle="collapse">
@@ -120,11 +121,18 @@
                     <div class="collapse" id="sidebarSettings">
                         <ul class="nav-second-level">
                             <li><a href="{{ route('settings.general') }}" class="tp-link">General Settings</a></li>
-                            <li><a href="{{ route('settings.currencies') }}" class="tp-link"> Currencies</a></li>
+                            <li><a href="{{ route('settings.currencies') }}" class="tp-link">Currencies</a></li>
+
+                            <!-- New User Management Section -->
+                            <li><a href="{{ route('users.index') }}" class="tp-link">Users</a></li>
+                            <!-- Users Management -->
+                            <li><a href="{{ route('users.roles') }}" class="tp-link">User Roles</a></li>
+                            <!-- User Roles Management -->
 
                         </ul>
                     </div>
                 </li>
+
 
 
                 <!-- Reporting -->

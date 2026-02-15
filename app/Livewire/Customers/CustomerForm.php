@@ -21,7 +21,7 @@ class CustomerForm extends Component
         $this->customer = $customer;
 
         if ($this->customer) {
-            abort_unless(auth()->user()->can('customers.update'), 403);
+        
 
             $this->name = $customer->name;
             $this->email = $customer->email;
@@ -30,17 +30,13 @@ class CustomerForm extends Component
             $this->address = $customer->address;
             $this->note = $customer->note;
         } else {
-            abort_unless(auth()->user()->can('customers.create'), 403);
+            
         }
     }
 
     public function save()
     {
-        if ($this->customer) {
-            abort_unless(auth()->user()->can('customers.update'), 403);
-        } else {
-            abort_unless(auth()->user()->can('customers.create'), 403);
-        }
+     
 
         $validated = $this->validate([
             'name' => 'required|string|max:255',

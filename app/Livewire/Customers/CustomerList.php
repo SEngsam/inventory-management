@@ -18,7 +18,6 @@ class CustomerList extends Component
 
     public function mount(): void
     {
-        abort_unless(auth()->user()->can('customers.view'), 403);
     }
 
     public function updatingSearch(): void
@@ -52,7 +51,6 @@ class CustomerList extends Component
 
     public function deleteCustomer(): void
     {
-        abort_unless(auth()->user()->can('customers.delete'), 403);
 
         if (!empty($this->selectedCustomers)) {
             Customer::whereIn('id', $this->selectedCustomers)->delete();
@@ -66,7 +64,6 @@ class CustomerList extends Component
 
     public function delete($customerId): void
     {
-        abort_unless(auth()->user()->can('customers.delete'), 403);
 
         $customer = Customer::find($customerId);
         if ($customer) {

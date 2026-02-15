@@ -15,14 +15,13 @@ class Product extends Model
         'image',
         'category_id',
         'brand_id',
-        'order_tax',
+        'tax_value',
         'tax_type',
         'description',
         'price',
         'warranty_period',
-        'guarantee',
+        'has_warranty',
         'stock_quantity',
-        'guarantee_period',
         'has_imei',
         'type',
         'code',
@@ -45,8 +44,11 @@ class Product extends Model
     {
         return $this->belongsTo(Brand::class);
     }
+    public function sales()
+    {
+        return $this->hasMany(SaleItem::class);
+    }
 
-    // 🧠 Optional: Access full image URL
     public function getImageUrlAttribute()
     {
         return $this->product_image

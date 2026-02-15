@@ -18,7 +18,6 @@ class ProductList extends Component
 
     public function mount(): void
     {
-        abort_unless(auth()->user()->can('products.view'), 403);
     }
 
     public function updatedSelectAll($value): void
@@ -35,7 +34,6 @@ class ProductList extends Component
 
     public function deleteSelected(): void
     {
-        abort_unless(auth()->user()->can('products.delete'), 403);
 
         if (empty($this->selectedProducts)) {
             return;

@@ -19,7 +19,6 @@ class UnitManager extends Component
 
     public function mount()
     {
-        abort_unless(auth()->user()->can('products.units.manage'), 403);
         $this->loadUnits();
     }
 
@@ -30,7 +29,6 @@ class UnitManager extends Component
 
     public function save()
     {
-        abort_unless(auth()->user()->can('products.units.manage'), 403);
 
         $isUpdating = (bool) $this->unit_id;
 
@@ -75,7 +73,6 @@ class UnitManager extends Component
 
     public function deleteSelected()
     {
-        abort_unless(auth()->user()->can('products.units.manage'), 403);
 
         if (count($this->selectedUnits) > 0) {
             Unit::whereIn('id', $this->selectedUnits)->delete();
@@ -89,7 +86,6 @@ class UnitManager extends Component
 
     public function edit($id)
     {
-        abort_unless(auth()->user()->can('products.units.manage'), 403);
 
         $unit = Unit::findOrFail($id);
 
