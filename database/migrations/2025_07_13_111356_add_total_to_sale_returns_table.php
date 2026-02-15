@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('sale_returns', function (Blueprint $table) {
             Schema::table('sale_returns', function (Blueprint $table) {
-                $table->decimal('total', 15, 2)->default(0)->after('note');
+                $table->decimal('total', 15, 2)->unsigned()->default(0)->after('note');
             });
         });
     }

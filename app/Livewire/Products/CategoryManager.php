@@ -16,7 +16,6 @@ class CategoryManager extends Component
 
     public function mount()
     {
-        abort_unless(auth()->user()->can('products.categories.manage'), 403);
         $this->loadCategories();
     }
 
@@ -27,7 +26,6 @@ class CategoryManager extends Component
 
     public function save()
     {
-        abort_unless(auth()->user()->can('products.categories.manage'), 403);
 
         $isUpdating = (bool) $this->category_id;
 
@@ -58,7 +56,6 @@ class CategoryManager extends Component
 
     public function deleteSelected()
     {
-        abort_unless(auth()->user()->can('products.categories.manage'), 403);
 
         if (count($this->selectedCategories) > 0) {
             Category::whereIn('id', $this->selectedCategories)->delete();
@@ -70,7 +67,6 @@ class CategoryManager extends Component
 
     public function edit($id)
     {
-        abort_unless(auth()->user()->can('products.categories.manage'), 403);
 
         $category = Category::findOrFail($id);
 

@@ -17,9 +17,9 @@ class ProductForm extends Component
     public $productId;
 
     public $name, $sku, $code, $type = 'standard';
-    public $price, $description, $order_tax, $tax_type = 'percent';
+    public $price, $description, $tax_value, $tax_type = 'percent';
     public $stock_quantity = 0, $category_id, $brand_id, $unit_id;
-    public $warranty_period, $guarantee = false, $guarantee_period;
+    public $warranty_period, $has_warranty = false;
     public $has_imei = false, $image, $new_product_image;
 
     public $categories = [];
@@ -30,11 +30,7 @@ class ProductForm extends Component
     {
          $this->productId = $product;
 
-        if ($this->productId) {
-            abort_unless(auth()->user()->can('products.update'), 403);
-        } else {
-            abort_unless(auth()->user()->can('products.create'), 403);
-        }
+ 
 
         $this->categories = Category::all();
         $this->brands = Brand::all();
@@ -55,15 +51,15 @@ class ProductForm extends Component
             'code' => 'nullable|string|max:255',
             'type' => 'required|in:standard,service',
             'price' => 'required|numeric|min:0',
-            'order_tax' => 'nullable|numeric|min:0',
+            'tax_value' => 'nullable|numeric|min:0',
             'tax_type' => 'required|in:percent,fixed',
             'stock_quantity' => 'nullable|integer|min:0',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
             'unit_id' => 'nullable|exists:units,id',
             'warranty_period' => 'nullable|string',
-            'guarantee' => 'boolean',
-            'guarantee_period' => 'nullable|string',
+            'has_warranty' => 'boolean',
+         
             'has_imei' => 'boolean',
             'description' => 'nullable|string',
             'new_product_image' => 'nullable|image|max:2048',
@@ -72,22 +68,17 @@ class ProductForm extends Component
 
     public function save()
     {
-        if ($this->productId) {
-            abort_unless(auth()->user()->can('products.update'), 403);
-        } else {
-            abort_unless(auth()->user()->can('products.create'), 403);
-        }
-
+      
         $this->validate();
 
         $data = $this->only([
             'name', 'sku', 'code', 'type', 'price', 'description',
-            'order_tax', 'tax_type', 'stock_quantity', 'category_id',
-            'brand_id', 'unit_id', 'warranty_period', 'guarantee',
-            'guarantee_period', 'has_imei',
+            'tax_value', 'tax_type', 'stock_quantity', 'category_id',
+            'brand_id', 'unit_id', 'warranty_period', 'has_warranty',
+             'has_imei',
         ]);
 
-        $data['guarantee'] = $this->guarantee ? 1 : 0;
+        $data['has_warranty'] = $this->has_warranty ? 1 : 0;
         $data['has_imei'] = $this->has_imei ? 1 : 0;
 
         if ($this->new_product_image) {

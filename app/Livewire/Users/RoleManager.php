@@ -25,7 +25,6 @@ class RoleManager extends Component
 
     public function mount(): void
     {
-        abort_unless(auth()->user()->can('users.roles.manage'), 403);
     }
 
     public function updatingSearch(): void
@@ -81,7 +80,6 @@ class RoleManager extends Component
 
     public function openCreate(): void
     {
-        abort_unless(auth()->user()->can('users.roles.manage'), 403);
 
         $this->resetForm();
         $this->isEdit = false;
@@ -90,7 +88,6 @@ class RoleManager extends Component
 
     public function edit($id): void
     {
-        abort_unless(auth()->user()->can('users.roles.manage'), 403);
 
         $role = Role::findOrFail($id);
 
@@ -104,7 +101,6 @@ class RoleManager extends Component
 
     public function save(): void
     {
-        abort_unless(auth()->user()->can('users.roles.manage'), 403);
 
         $this->validate();
 
@@ -123,7 +119,6 @@ class RoleManager extends Component
 
     public function delete($id): void
     {
-        abort_unless(auth()->user()->can('users.roles.manage'), 403);
 
         $role = Role::find($id);
         if ($role) {

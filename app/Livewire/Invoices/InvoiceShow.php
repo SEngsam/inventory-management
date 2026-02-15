@@ -7,13 +7,15 @@ use Livewire\Component;
 
 class InvoiceShow extends Component
 {
-    public $invoice;
+    public Invoice $invoice;
 
-    public function mount(Invoice $invoice)
+    public function mount(Invoice $invoice): void
     {
-         abort_unless(auth()->user()->can('invoices.view'), 403);
-
-        $this->invoice = $invoice->load(['customer', 'items.product']);
+        $this->invoice = $invoice->loadMissing([
+            'customer',
+            'items.product',
+            'user',
+        ]);
     }
 
     public function render()

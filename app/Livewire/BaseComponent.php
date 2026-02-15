@@ -16,7 +16,6 @@ abstract class BaseComponent extends Component
 
     protected function authorizePermission(string $permission): void
     {
-        abort_unless(auth()->user()?->can($permission), 403);
     }
 
     protected function authorizeView(): void

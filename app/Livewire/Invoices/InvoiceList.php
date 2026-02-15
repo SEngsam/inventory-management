@@ -17,7 +17,6 @@ class InvoiceList extends Component
 
     public function mount(): void
     {
-        abort_unless(auth()->user()->can('invoices.view'), 403);
     }
 
     public function updatedSelectAll($value): void
@@ -35,7 +34,6 @@ class InvoiceList extends Component
 
     public function deleteSelected(): void
     {
-        abort_unless(auth()->user()->can('invoices.delete'), 403);
 
         if (count($this->selectedInvoices) > 0) {
             Invoice::whereIn('id', $this->selectedInvoices)->delete();

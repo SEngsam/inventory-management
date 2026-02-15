@@ -27,4 +27,5 @@ class Sale extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+    
 }

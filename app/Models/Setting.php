@@ -6,15 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-    protected $fillable = ['key', 'value'];
+    protected $fillable = ['key','value'];
 
-    public static function get($key, $default = null)
+    public static function get(string $key, $default = null)
     {
         return static::where('key', $key)->value('value') ?? $default;
     }
 
-    public static function set($key, $value)
+    public static function set(string $key, $value): void
     {
-        return static::updateOrCreate(['key' => $key], ['value' => $value]);
+        static::updateOrCreate(
+            ['key' => $key],
+            ['value' => is_array($value) ? json_encode($value) : $value]
+        );
     }
 }

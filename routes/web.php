@@ -30,6 +30,8 @@ use App\Livewire\Purchases\PurchaseShow;
 use App\Livewire\Sales\SaleForm;
 use App\Livewire\Sales\SaleList;
 use App\Livewire\Sales\SaleShow;
+
+// Sale Returns
 use App\Livewire\Sales\ReturnForm;
 use App\Livewire\Sales\ReturnList;
 use App\Livewire\Sales\ReturnShow;
@@ -46,12 +48,15 @@ use App\Livewire\Customers\CustomerList;
 use App\Livewire\Invoices\CreateInvoice;
 use App\Livewire\Invoices\InvoiceList;
 use App\Livewire\Invoices\InvoiceShow;
+use App\Livewire\Settings\ManageCompanyBranding;
+use App\Livewire\Settings\ManageInvoiceSettings;
 
 /*
 |--------------------------------------------------------------------------
 | Auth Routes
 |--------------------------------------------------------------------------
 */
+
 require __DIR__ . '/auth.php';
 
 /*
@@ -59,11 +64,10 @@ require __DIR__ . '/auth.php';
 | Protected Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'access.control'])->group(function () {
 
     // Dashboard
     Route::get('/', DashboardPanel::class)
-        ->middleware('permission:dashboard.view')
         ->name('dashboard');
 
     /*
@@ -72,11 +76,9 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/users', UserManager::class)
-        ->middleware('permission:users.view')
         ->name('users.index');
 
     Route::get('/users/roles', RoleManager::class)
-        ->middleware('permission:users.roles.manage')
         ->name('users.roles');
 
     /*
@@ -86,13 +88,13 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::prefix('settings')->name('settings.')->group(function () {
 
-        Route::get('/', ManageSettings::class)
-            ->middleware('permission:settings.view')
+        Route::get('/branding', ManageCompanyBranding::class)
             ->name('general');
 
         Route::get('/currencies', ManageCurrencies::class)
-            ->middleware('permission:settings.currencies.manage')
             ->name('currencies');
+        Route::get('/invoices', ManageInvoiceSettings::class)
+            ->name('settings.invoices');
     });
 
     /*
@@ -103,27 +105,21 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('products')->name('products.')->group(function () {
 
         Route::get('/', ProductList::class)
-            ->middleware('permission:products.view')
             ->name('list');
 
         Route::get('/create', ProductForm::class)
-            ->middleware('permission:products.create')
             ->name('create');
 
         Route::get('/edit/{product}', ProductForm::class)
-            ->middleware('permission:products.update')
             ->name('edit');
 
         Route::get('/units', UnitManager::class)
-            ->middleware('permission:products.units.manage')
             ->name('units');
 
         Route::get('/categories', CategoryManager::class)
-            ->middleware('permission:products.categories.manage')
             ->name('categories');
 
         Route::get('/brands', BrandManager::class)
-            ->middleware('permission:products.brands.manage')
             ->name('brands');
     });
 
@@ -135,19 +131,15 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('purchases')->name('purchases.')->group(function () {
 
         Route::get('/', PurchaseList::class)
-            ->middleware('permission:purchases.view')
             ->name('index');
 
         Route::get('/create', PurchaseForm::class)
-            ->middleware('permission:purchases.create')
             ->name('create');
 
         Route::get('/edit/{purchaseId}', PurchaseForm::class)
-            ->middleware('permission:purchases.update')
             ->name('edit');
 
         Route::get('/{purchaseId}', PurchaseShow::class)
-            ->middleware('permission:purchases.show')
             ->name('show');
     });
 
@@ -159,19 +151,15 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('sales')->name('sales.')->group(function () {
 
         Route::get('/', SaleList::class)
-            ->middleware('permission:sales.view')
             ->name('index');
 
         Route::get('/create', SaleForm::class)
-            ->middleware('permission:sales.create')
             ->name('create');
 
         Route::get('/edit/{id}', SaleForm::class)
-            ->middleware('permission:sales.update')
             ->name('edit');
 
         Route::get('/{id}', SaleShow::class)
-            ->middleware('permission:sales.show')
             ->name('show');
     });
 
@@ -183,19 +171,15 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('returns')->name('sale-returns.')->group(function () {
 
         Route::get('/', ReturnList::class)
-            ->middleware('permission:sale-returns.view')
             ->name('index');
 
         Route::get('/create', ReturnForm::class)
-            ->middleware('permission:sale-returns.create')
             ->name('create');
 
         Route::get('/edit/{return}', ReturnForm::class)
-            ->middleware('permission:sale-returns.update')
             ->name('edit');
 
         Route::get('/{return}', ReturnShow::class)
-            ->middleware('permission:sale-returns.show')
             ->name('show');
     });
 
@@ -207,15 +191,12 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('suppliers')->name('suppliers.')->group(function () {
 
         Route::get('/', SupplierList::class)
-            ->middleware('permission:suppliers.view')
             ->name('index');
 
         Route::get('/create', SupplierForm::class)
-            ->middleware('permission:suppliers.create')
             ->name('create');
 
         Route::get('/edit/{supplier}', SupplierForm::class)
-            ->middleware('permission:suppliers.update')
             ->name('edit');
     });
 
@@ -227,15 +208,12 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('customers')->name('customers.')->group(function () {
 
         Route::get('/', CustomerList::class)
-            ->middleware('permission:customers.view')
             ->name('index');
 
         Route::get('/create', CustomerForm::class)
-            ->middleware('permission:customers.create')
             ->name('create');
 
         Route::get('/edit/{customer}', CustomerForm::class)
-            ->middleware('permission:customers.update')
             ->name('edit');
     });
 
@@ -247,32 +225,27 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('invoices')->name('invoices.')->group(function () {
 
         Route::get('/', InvoiceList::class)
-            ->middleware('permission:invoices.view')
             ->name('index');
 
         Route::get('/create', CreateInvoice::class)
-            ->middleware('permission:invoices.create')
             ->name('create');
 
         Route::get('/{invoice}', InvoiceShow::class)
-            ->middleware('permission:invoices.show')
             ->name('show');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Catch-All 
-    |--------------------------------------------------------------------------
-    */
+    Route::get(
+        '/export/{format}/{type}/{id}',
+        \App\Http\Controllers\ExportController::class
+    )->name('export');
+
+
     Route::get('{first}/{second}/{third}', [RoutingController::class, 'thirdLevel'])
-        ->middleware('permission:dashboard.view')
         ->name('third');
 
     Route::get('{first}/{second}', [RoutingController::class, 'secondLevel'])
-        ->middleware('permission:dashboard.view')
         ->name('second');
 
     Route::get('{any}', [RoutingController::class, 'root'])
-        ->middleware('permission:dashboard.view')
         ->name('any');
 });

@@ -31,7 +31,6 @@ class UserManager extends Component
 
     public function mount(): void
     {
-        abort_unless(auth()->user()->can('users.view'), 403);
         $this->roles = Role::query()->orderBy('name')->pluck('name')->toArray();
     }
 
@@ -81,7 +80,6 @@ class UserManager extends Component
 
     public function openCreate(): void
     {
-        abort_unless(auth()->user()->can('users.create'), 403);
 
         $this->resetForm();
         $this->isEdit = false;
@@ -90,7 +88,6 @@ class UserManager extends Component
 
     public function edit($id): void
     {
-        abort_unless(auth()->user()->can('users.update'), 403);
 
         $user = User::findOrFail($id);
 
@@ -106,7 +103,6 @@ class UserManager extends Component
 
     public function save(): void
     {
-        abort_unless(auth()->user()->can($this->isEdit ? 'users.update' : 'users.create'), 403);
 
         $this->validate();
 
@@ -131,7 +127,6 @@ class UserManager extends Component
 
     public function deleteSelected(): void
     {
-        abort_unless(auth()->user()->can('users.delete'), 403);
 
         if (!empty($this->selectedUsers)) {
             User::whereIn('id', $this->selectedUsers)->delete();
@@ -146,7 +141,6 @@ class UserManager extends Component
 
     public function delete($id): void
     {
-        abort_unless(auth()->user()->can('users.delete'), 403);
 
         $user = User::find($id);
         if ($user) {

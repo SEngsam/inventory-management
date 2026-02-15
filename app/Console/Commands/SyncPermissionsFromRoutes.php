@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class SyncPermissionsFromRoutes extends Command
 {
@@ -23,7 +24,7 @@ class SyncPermissionsFromRoutes extends Command
             if (!$name) {
                 continue;
             }
- 
+
             if (
                 str_starts_with($name, 'debugbar') ||
                 str_starts_with($name, 'livewire') ||
@@ -42,5 +43,10 @@ class SyncPermissionsFromRoutes extends Command
         }
 
         $this->info("Done. Created $created new permissions.");
+
+        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $adminRole->syncPermissions(Permission::all());
+
+        $this->info("Admin role synced with all permissions.");
     }
 }
