@@ -38,6 +38,7 @@ class NavigationTest extends TestCase
     {
         $this->actingAs(User::factory()->create())
             ->get(route('dashboard'))
-            ->assertForbidden();
+            ->assertForbidden()
+            ->assertSee(__('Access denied'));
     }
 }
