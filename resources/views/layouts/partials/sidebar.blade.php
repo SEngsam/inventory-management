@@ -5,7 +5,7 @@
 
             <!-- Logo Section -->
             <div class="logo-box">
-                <a href="{{ route('any', 'index') }}" class="logo logo-light">
+                <a href="{{ route('dashboard') }}" class="logo logo-light">
                     <span class="logo-sm">
                         <img src="/images/logo-sm.png" alt="" height="22">
                     </span>
@@ -13,7 +13,7 @@
                         <img src="/images/logo-light.png" alt="" height="24">
                     </span>
                 </a>
-                <a href="{{ route('any', 'index') }}" class="logo logo-dark">
+                <a href="{{ route('dashboard') }}" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="/images/logo-sm.png" alt="" height="22">
                     </span>
@@ -28,7 +28,7 @@
                 <li class="menu-title">Menu</li>
 
                 <li>
-                    <a href="{{ route('any', 'index') }}" class="tp-link">
+                    <a href="{{ route('dashboard') }}" class="tp-link">
                         <i data-feather="home"></i>
                         <span> Dashboard </span>
                     </a>
@@ -43,11 +43,11 @@
                     </a>
                     <div class="collapse" id="sidebarProduct">
                         <ul class="nav-second-level">
-                            <li><a href="{{ route('second', ['products', 'categories']) }}"
+                            <li><a href="{{ route('products.categories') }}"
                                     class="tp-link">Categories</a></li>
-                            <li><a href="{{ route('second', ['products', '']) }}" class="tp-link">Products</a></li>
-                            <li><a href="{{ route('second', ['products', 'units']) }}" class="tp-link">Units</a></li>
-                            <li><a href="{{ route('second', ['products', 'brands']) }}" class="tp-link">Brands</a></li>
+                            <li><a href="{{ route('products.list') }}" class="tp-link">Products</a></li>
+                            <li><a href="{{ route('products.units') }}" class="tp-link">Units</a></li>
+                            <li><a href="{{ route('products.brands') }}" class="tp-link">Brands</a></li>
                         </ul>
                     </div>
                 </li>
@@ -56,7 +56,7 @@
                 <li class="menu-title">Operations</li>
 
                 <li>
-                    <a href="{{ route('second', ['purchases', '']) }}" class="tp-link">
+                    <a href="{{ route('purchases.index') }}" class="tp-link">
                         <i data-feather="shopping-cart"></i>
                         <span> Purchases </span>
                     </a>
@@ -69,7 +69,7 @@
                     </a>
                     <div class="collapse" id="sidebarSales">
                         <ul class="nav-second-level">
-                            <li><a href="{{ route('second', ['sales', '']) }}" class="tp-link">Sales</a></li>
+                            <li><a href="{{ route('sales.index') }}" class="tp-link">Sales</a></li>
 
                             <li><a href="{{ route('sale-returns.index') }}" class="tp-link">Return Sales</a>
                             </li>
@@ -78,38 +78,28 @@
                     </div>
                 </li>
 
-
-
-                <li>
-                    <a href="{{ route('second', ['inventory', 'transactions']) }}" class="tp-link">
-                        <i data-feather="database"></i>
-                        <span> Inventory Transactions </span>
-                    </a>
-                </li>
-
                 <!-- Management -->
                 <li class="menu-title">Management</li>
 
                 <li>
-                    <a href="{{ route('second', ['customers', '']) }}" class="tp-link">
+                    <a href="{{ route('customers.index') }}" class="tp-link">
                         <i data-feather="users"></i>
                         <span> Customers </span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('second', ['suppliers', '']) }}" class="tp-link">
+                    <a href="{{ route('suppliers.index') }}" class="tp-link">
                         <i data-feather="truck"></i>
                         <span> Suppliers </span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('second', ['invoices', '']) }}" class="tp-link">
+                    <a href="{{ route('invoices.index') }}" class="tp-link">
                         <i data-feather="file-text"></i>
                         <span> Invoices </span>
                     </a>
                 </li>
 
-                <!-- Settings -->
                 <!-- Settings -->
                 <li class="menu-title">Settings</li>
                 <li>
@@ -132,19 +122,6 @@
                         </ul>
                     </div>
                 </li>
-
-
-
-                <!-- Reporting -->
-                <li class="menu-title">Reports & Extras</li>
-
-                <li>
-                    <a href="{{ route('second', ['reports', '']) }}" class="tp-link">
-                        <i data-feather="bar-chart-2"></i>
-                        <span> Reports </span>
-                    </a>
-                </li>
-
 
             </ul>
         </div>
