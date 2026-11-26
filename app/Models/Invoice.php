@@ -8,7 +8,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Invoice extends Model
 {
-    protected $fillable = ['customer_id', 'total', 'issued_at'];
+    protected $fillable = [
+        'invoice_number',
+        'status',
+        'customer_id',
+        'user_id',
+        'issued_at',
+        'subtotal',
+        'tax_total',
+        'discount_total',
+        'total',
+    ];
 
     protected $casts = [
         'issued_at' => 'datetime',
