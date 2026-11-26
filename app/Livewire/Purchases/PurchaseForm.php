@@ -39,7 +39,6 @@ class PurchaseForm extends Component
 
         if ($purchaseId) {
             $purchase = Purchase::with('items')->findOrFail($purchaseId);
-            // Editing an existing purchase
             $this->purchaseId = $purchase->id;
             $this->fill($purchase->only('supplier_id', 'purchase_date', 'reference_no', 'status', 'notes'));
             $this->items = $purchase->items->map(function ($item) {
@@ -50,7 +49,6 @@ class PurchaseForm extends Component
                 ];
             })->toArray();
         } else {
-            // Creating a new purchase
             $this->reference_no = 'REF-'.strtoupper(Str::random(6));
             $this->purchase_date = Carbon::now()->format('Y-m-d');
             $this->items[] = ['product_id' => '', 'quantity' => 1, 'unit_cost' => 0];

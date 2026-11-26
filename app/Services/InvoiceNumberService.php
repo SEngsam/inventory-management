@@ -42,7 +42,6 @@ class InvoiceNumberService
 
     private function ensureAndLockGet(string $key, string $default): string
     {
-        // Create the row with its default on first use; leave existing values alone.
         DB::table('settings')->insertOrIgnore([
             'key' => $key,
             'value' => $default,

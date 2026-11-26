@@ -14,13 +14,10 @@ class PurchaseService
     ) {}
 
     /**
-     * Create or update a purchase. Stock is only added once the purchase is
-     * received; editing puts the previous effect back first.
-     *
      * @param  array{supplier_id: int, purchase_date: string, reference_no: string, status: string, notes?: ?string}  $data
      * @param  list<array{product_id: int|string, quantity: int|string, unit_cost: float|string}>  $items
      *
-     * @throws ValidationException when received stock that is being removed was already sold
+     * @throws ValidationException
      */
     public function save(array $data, array $items, ?Purchase $purchase = null): Purchase
     {

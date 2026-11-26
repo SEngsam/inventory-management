@@ -1,105 +1,77 @@
 <?php
 
-namespace Tests\Feature\Stock;
-
 use App\Exceptions\InsufficientStockException;
 use App\Livewire\Purchases\PurchaseForm;
+use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Services\PurchaseService;
 use App\Services\StockService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\Feature\Stock\Concerns\InteractsWithStock;
-use Tests\TestCase;
 
-class PurchaseStockTest extends TestCase
+function purchaseData(string $status = Purchase::STATUS_RECEIVED, array $overrides = []): array
 {
-    use InteractsWithStock;
-    use RefreshDatabase;
+    return [
+        'supplier_id' => Supplier::factory()->create()->id,
+        'purchase_date' => now()->toDateString(),
+        'reference_no' => 'PO-'.uniqid(),
+        'status' => $status,
+        ...$overrides,
+    ];
+}
 
-    private PurchaseService $purchases;
+function purchaseLine(Product $product, int $quantity): array
+{
+    return ['product_id' => $product->id, 'quantity' => $quantity, 'unit_cost' => 3];
+}
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->purchases = app(PurchaseService::class);
-    }
+beforeEach(function () {
+    $this->purchases = app(PurchaseService::class);
+});
 
-    private function data(string $status = Purchase::STATUS_RECEIVED): array
-    {
-        return [
-            'supplier_id' => Supplier::factory()->create()->id,
-            'purchase_date' => now()->toDateString(),
-            'reference_no' => 'PO-'.uniqid(),
-            'status' => $status,
-        ];
-    }
+it('adds stock for a received purchase', function () {
+    $product = Product::factory()->withStock(2)->create();
 
-    public function test_a_received_purchase_adds_stock(): void
-    {
-        $product = $this->productWithStock(2);
+    $this->purchases->save(purchaseData(), [purchaseLine($product, 5)]);
 
-        $this->purchases->save($this->data(), [
-            ['product_id' => $product->id, 'quantity' => 5, 'unit_cost' => 3],
-        ]);
+    expect($product)->toHaveStock(7);
+});
 
-        $this->assertStock(7, $product);
-    }
+it('does not add stock while a purchase is :dataset', function (string $status) {
+    $product = Product::factory()->withStock(2)->create();
 
-    public function test_ordered_or_pending_purchases_do_not_add_stock(): void
-    {
-        $product = $this->productWithStock(2);
+    $this->purchases->save(purchaseData($status), [purchaseLine($product, 5)]);
 
-        foreach ([Purchase::STATUS_ORDERED, Purchase::STATUS_PENDING] as $status) {
-            $this->purchases->save($this->data($status), [
-                ['product_id' => $product->id, 'quantity' => 5, 'unit_cost' => 3],
-            ]);
-        }
+    expect($product)->toHaveStock(2);
+})->with([Purchase::STATUS_ORDERED, Purchase::STATUS_PENDING]);
 
-        $this->assertStock(2, $product);
-    }
+it('adds stock once when an ordered purchase is received and saved again', function () {
+    $product = Product::factory()->create();
+    $purchase = $this->purchases->save(purchaseData(Purchase::STATUS_ORDERED), [purchaseLine($product, 5)]);
+    $received = purchaseData(overrides: ['reference_no' => $purchase->reference_no]);
 
-    public function test_receiving_an_ordered_purchase_adds_its_stock_once(): void
-    {
-        $product = $this->productWithStock(0);
-        $purchase = $this->purchases->save($this->data(Purchase::STATUS_ORDERED), [
-            ['product_id' => $product->id, 'quantity' => 5, 'unit_cost' => 3],
-        ]);
+    $this->purchases->save($received, [purchaseLine($product, 5)], $purchase);
+    $this->purchases->save($received, [purchaseLine($product, 5)], $purchase);
 
-        $items = [['product_id' => $product->id, 'quantity' => 5, 'unit_cost' => 3]];
-        $this->purchases->save([...$this->data(), 'reference_no' => $purchase->reference_no], $items, $purchase);
-        $this->purchases->save([...$this->data(), 'reference_no' => $purchase->reference_no], $items, $purchase);
+    expect($product)->toHaveStock(5);
+});
 
-        $this->assertStock(5, $product);
-    }
+it('refuses to reduce a received purchase whose stock was already sold', function () {
+    $product = Product::factory()->create();
+    $purchase = $this->purchases->save(purchaseData(), [purchaseLine($product, 5)]);
+    app(StockService::class)->setLevel($product, 1);
 
-    public function test_reducing_a_received_purchase_fails_if_the_stock_was_already_sold(): void
-    {
-        $product = $this->productWithStock(0);
-        $purchase = $this->purchases->save($this->data(), [
-            ['product_id' => $product->id, 'quantity' => 5, 'unit_cost' => 3],
-        ]);
-        app(StockService::class)->setLevel($product, 1);
+    expect(fn () => $this->purchases->save(purchaseData(), [purchaseLine($product, 2)], $purchase))
+        ->toThrow(InsufficientStockException::class);
 
-        $this->expectException(InsufficientStockException::class);
+    expect($product)->toHaveStock(1)
+        ->and((int) $purchase->items()->sum('quantity'))->toBe(5);
+});
 
-        try {
-            $this->purchases->save($this->data(), [
-                ['product_id' => $product->id, 'quantity' => 2, 'unit_cost' => 3],
-            ], $purchase);
-        } finally {
-            $this->assertStock(1, $product);
-            $this->assertSame(5, (int) $purchase->items()->sum('quantity'));
-        }
-    }
-
-    public function test_the_edit_page_loads_the_existing_purchase(): void
-    {
-        $product = $this->productWithStock(0);
-        $purchase = $this->purchases->save($this->data(), [
-            ['product_id' => $product->id, 'quantity' => 5, 'unit_cost' => 3],
-        ]);
+describe('purchase form', function () {
+    it('loads and updates an existing purchase on its edit page', function () {
+        $product = Product::factory()->create();
+        $purchase = $this->purchases->save(purchaseData(), [purchaseLine($product, 5)]);
 
         Livewire::test(PurchaseForm::class, ['purchaseId' => $purchase->id])
             ->assertSet('purchaseId', $purchase->id)
@@ -108,7 +80,28 @@ class PurchaseStockTest extends TestCase
             ->call('save')
             ->assertHasNoErrors();
 
-        $this->assertStock(7, $product);
-        $this->assertSame(1, Purchase::count());
-    }
-}
+        expect($product)->toHaveStock(7)
+            ->and(Purchase::count())->toBe(1);
+    });
+
+    it('validates its fields', function (string $field, mixed $value, string $error, string $rule) {
+        Livewire::test(PurchaseForm::class)
+            ->set($field, $value)
+            ->call('save')
+            ->assertHasErrors([$error => $rule]);
+    })->with([
+        'missing supplier' => ['supplier_id', null, 'supplier_id', 'required'],
+        'unknown status' => ['status', 'lost', 'status', 'in'],
+        'no items' => ['items', [], 'items', 'required'],
+        'negative cost' => ['items', [['product_id' => 1, 'quantity' => 1, 'unit_cost' => -1]], 'items.0.unit_cost', 'min'],
+    ]);
+
+    it('rejects a duplicate reference number', function () {
+        $existing = Purchase::factory()->create();
+
+        Livewire::test(PurchaseForm::class)
+            ->set('reference_no', $existing->reference_no)
+            ->call('save')
+            ->assertHasErrors(['reference_no' => 'unique']);
+    });
+});

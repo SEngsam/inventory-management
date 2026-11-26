@@ -22,8 +22,6 @@ class ReturnForm extends BaseComponent
     public $note;
 
     /**
-     * One row per product on the selected sale.
-     *
      * @var list<array{product_id: int, product_name: string, quantity: int, max_quantity: int, unit_price: float}>
      */
     public $items = [];
@@ -32,7 +30,6 @@ class ReturnForm extends BaseComponent
     {
         $this->authorizeAction('create');
 
-        // Only completed sales took stock out, so only they can be returned.
         $this->sales = Sale::with('customer')
             ->where('status', Sale::STATUS_COMPLETED)
             ->latest('sale_date')

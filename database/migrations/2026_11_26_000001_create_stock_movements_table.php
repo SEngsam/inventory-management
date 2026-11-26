@@ -12,9 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->string('type', 20);
-            // Signed: positive adds stock, negative removes it.
             $table->integer('quantity');
-            // Product stock level right after this movement was applied.
             $table->unsignedInteger('balance_after');
             $table->nullableMorphs('reference');
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();

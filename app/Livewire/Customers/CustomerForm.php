@@ -23,7 +23,7 @@ class CustomerForm extends Component
 
     public function mount(?Customer $customer = null)
     {
-        $this->customer = $customer;
+        $this->customer = $customer?->exists ? $customer : null;
 
         if ($this->customer) {
 

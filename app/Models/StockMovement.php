@@ -10,11 +10,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use LogicException;
 
 /**
- * One row in the append-only stock ledger.
- *
- * Rows are never updated or deleted: corrections are recorded as new
- * movements, so the sum of a product's movements always equals its stock.
- *
  * @property int $id
  * @property int $product_id
  * @property StockMovementType $type

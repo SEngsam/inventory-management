@@ -2,16 +2,6 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Validation Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | Arabic versions of the default validator messages. Keys mirror
-    | lang/en/validation.php.
-    |
-    */
-
     'accepted' => 'يجب قبول حقل :attribute.',
     'accepted_if' => 'يجب قبول حقل :attribute عندما يكون :other هو :value.',
     'active_url' => 'يجب أن يكون حقل :attribute رابطًا صالحًا.',
@@ -162,23 +152,7 @@ return [
     'ulid' => 'يجب أن يكون حقل :attribute معرف ULID صالحًا.',
     'uuid' => 'يجب أن يكون حقل :attribute معرف UUID صالحًا.',
 
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Language Lines
-    |--------------------------------------------------------------------------
-    */
-
     'custom' => [],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Attributes
-    |--------------------------------------------------------------------------
-    |
-    | Human-readable names for the form fields used across the app, so
-    | messages read "حقل الكمية مطلوب" instead of "حقل quantity مطلوب".
-    |
-    */
 
     'attributes' => [
         'name' => 'الاسم',

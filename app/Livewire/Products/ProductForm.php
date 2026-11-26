@@ -126,8 +126,6 @@ class ProductForm extends Component
         DB::transaction(function () use ($data, $stock) {
             $product = Product::updateOrCreate(['id' => $this->productId], $data);
 
-            // Stock never changes through the product itself: a new product
-            // gets an opening movement, an edited one an adjustment.
             $quantity = (int) ($this->stock_quantity ?? 0);
 
             $product->wasRecentlyCreated

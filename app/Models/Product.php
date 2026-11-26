@@ -10,11 +10,6 @@ class Product extends Model
 {
     use HasFactory;
 
-    /**
-     * stock_quantity is deliberately not fillable: it is a cached balance
-     * that only App\Services\StockService may change, together with a
-     * matching row in stock_movements.
-     */
     protected $fillable = [
         'name',
         'sku',

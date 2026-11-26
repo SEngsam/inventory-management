@@ -100,7 +100,7 @@
                             </button>
                         @endif
 
-                        @if ($logo)
+                        @if ($logo && $logo->isPreviewable())
                             <div class="mt-3">
                                 <label class="form-label d-block">
                                     Preview

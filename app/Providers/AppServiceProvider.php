@@ -26,8 +26,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Store short, stable names in polymorphic columns (e.g. the stock
-        // ledger's reference_type) instead of PHP class names.
         Relation::morphMap([
             'invoice' => Invoice::class,
             'purchase' => Purchase::class,

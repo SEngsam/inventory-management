@@ -122,7 +122,7 @@
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
 
-                                    @if ($newImage)
+                                    @if ($newImage && $newImage->isPreviewable())
                                         <div class="mt-2">
                                             <span>Preview:</span><br>
                                             <img src="{{ $newImage->temporaryUrl() }}" class="rounded" width="100">
