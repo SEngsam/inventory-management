@@ -7,9 +7,6 @@ use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * An invoice record only. It does not touch stock; use InvoiceService when
- * a test needs the matching stock movements.
- *
  * @extends Factory<Invoice>
  */
 class InvoiceFactory extends Factory

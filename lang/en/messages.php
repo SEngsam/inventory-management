@@ -2,15 +2,6 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Application Messages
-    |--------------------------------------------------------------------------
-    |
-    | Flash notices and validation messages shown by the inventory screens.
-    |
-    */
-
     'stock' => [
         'insufficient_detail' => 'Insufficient stock for :product. Available: :available, requested: :requested.',
     ],

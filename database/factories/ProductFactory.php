@@ -10,9 +10,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * Products start with no stock. Use withStock() to give them some: it
- * records an opening movement so the ledger and stock_quantity agree.
- *
  * @extends Factory<Product>
  */
 class ProductFactory extends Factory

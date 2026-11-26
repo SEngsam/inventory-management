@@ -7,8 +7,6 @@ use Illuminate\Routing\Route as RoutingRoute;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Named GET routes that sit behind the access.control middleware.
- *
  * @return array<string, RoutingRoute>
  */
 function protectedRoutes(bool $withParameters = true): array
@@ -22,7 +20,6 @@ function protectedRoutes(bool $withParameters = true): array
 
 function urlFor(RoutingRoute $route): string
 {
-    // Dummy parameters are enough: authentication runs before the page loads anything.
     return route($route->getName(), array_fill_keys($route->parameterNames(), 1));
 }
 
@@ -72,7 +69,6 @@ it('grants exactly the pages a user has permission for', function () {
 it('renders every page for an admin', function () {
     actingAsAdmin();
 
-    // Give list pages at least one row so per-row links are rendered too.
     Customer::factory()->create();
     Supplier::factory()->create();
 

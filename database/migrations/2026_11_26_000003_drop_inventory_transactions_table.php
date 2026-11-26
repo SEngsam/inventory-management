@@ -5,11 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * inventory_transactions was only written by a component that was never
- * routed, so it carries no history worth keeping. Refuse to drop it if it
- * unexpectedly holds rows rather than silently discarding them.
- */
 return new class extends Migration
 {
     public function up(): void

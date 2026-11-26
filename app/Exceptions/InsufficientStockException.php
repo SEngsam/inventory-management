@@ -4,12 +4,6 @@ namespace App\Exceptions;
 
 use Illuminate\Validation\ValidationException;
 
-/**
- * Thrown when a stock change would take a product below zero.
- *
- * It is a ValidationException so Livewire components and HTTP requests show
- * it as a regular form error on the "items" field.
- */
 class InsufficientStockException extends ValidationException
 {
     /**

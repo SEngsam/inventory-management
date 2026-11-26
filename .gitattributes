@@ -15,8 +15,6 @@
 *.woff binary
 *.woff2 binary
 
-# Language statistics: the SCSS, JavaScript and fonts under resources/ come
-# from the admin theme, so keep them out of the repository's language stats.
 resources/scss/** linguist-vendored
 resources/js/** linguist-vendored
 resources/fonts/** linguist-vendored

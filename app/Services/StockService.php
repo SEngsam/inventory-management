@@ -14,26 +14,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
-/**
- * The only place allowed to change product stock.
- *
- * Every change is written to the stock_movements ledger and applied to the
- * cached products.stock_quantity column in the same transaction, while the
- * affected product rows are locked. That keeps the two in sync and stops
- * concurrent requests from selling the same unit twice.
- */
 class StockService
 {
     /**
-     * Lock the given products for the rest of the current transaction.
-     *
-     * Rows are always locked in ascending id order so two transactions that
-     * touch the same products cannot deadlock by locking them in different
-     * orders. Callers that change stock in several steps inside one
-     * transaction should lock every product they will touch up front.
-     *
      * @param  iterable<int>  $productIds
-     * @return EloquentCollection<int, Product> keyed by product id
+     * @return EloquentCollection<int, Product>
      */
     public function lock(iterable $productIds): EloquentCollection
     {
@@ -60,15 +45,10 @@ class StockService
     }
 
     /**
-     * Record stock changes and apply them to the products.
-     *
-     * Either every change is applied or none is: all lines are checked
-     * before anything is written.
-     *
-     * @param  array<int, int>  $changes  product id => signed quantity (positive adds stock)
+     * @param  array<int, int>  $changes
      * @return Collection<int, StockMovement>
      *
-     * @throws InsufficientStockException when a product would go below zero
+     * @throws InsufficientStockException
      */
     public function record(
         StockMovementType $type,
@@ -131,9 +111,7 @@ class StockService
     }
 
     /**
-     * Add stock, e.g. for a received purchase or a customer return.
-     *
-     * @param  array<int, int>  $quantities  product id => positive quantity
+     * @param  array<int, int>  $quantities
      * @return Collection<int, StockMovement>
      */
     public function add(StockMovementType $type, array $quantities, ?Model $reference = null, ?string $note = null): Collection
@@ -142,9 +120,7 @@ class StockService
     }
 
     /**
-     * Remove stock, e.g. for a completed sale.
-     *
-     * @param  array<int, int>  $quantities  product id => positive quantity
+     * @param  array<int, int>  $quantities
      * @return Collection<int, StockMovement>
      *
      * @throws InsufficientStockException
@@ -160,9 +136,7 @@ class StockService
     }
 
     /**
-     * Net stock effect a document has had so far, per movement type and product.
-     *
-     * @return array<string, array<int, int>> movement type => [product id => signed quantity]
+     * @return array<string, array<int, int>>
      */
     public function netFor(Model $reference): array
     {
@@ -184,14 +158,9 @@ class StockService
     }
 
     /**
-     * Cancel out every stock change recorded for a document.
-     *
-     * Reversals keep the original movement type with the opposite sign, so a
-     * deleted sale shows up as a positive "sale" movement.
-     *
      * @return Collection<int, StockMovement>
      *
-     * @throws InsufficientStockException when stock the document added has since been used
+     * @throws InsufficientStockException
      */
     public function reverse(Model $reference, ?string $note = null): Collection
     {
@@ -209,9 +178,6 @@ class StockService
         });
     }
 
-    /**
-     * Record a product's starting stock.
-     */
     public function opening(Product $product, int $quantity, ?string $note = null): ?StockMovement
     {
         if ($quantity < 0) {
@@ -221,9 +187,6 @@ class StockService
         return $this->record(StockMovementType::Opening, [$product->id => $quantity], note: $note)->first();
     }
 
-    /**
-     * Correct a product's stock to a counted level with an adjustment movement.
-     */
     public function setLevel(Product $product, int $level, ?string $note = null): ?StockMovement
     {
         if ($level < 0) {

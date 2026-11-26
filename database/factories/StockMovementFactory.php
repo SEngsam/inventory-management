@@ -8,10 +8,6 @@ use App\Models\StockMovement;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Creates a ledger row without updating the product's stock_quantity.
- * Only use it to test the ledger itself; anything that should keep stock
- * consistent must go through StockService.
- *
  * @extends Factory<StockMovement>
  */
 class StockMovementFactory extends Factory

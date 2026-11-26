@@ -9,10 +9,6 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-/**
- * Read-only view of the stock ledger, optionally narrowed to one product
- * or movement type.
- */
 class StockMovementList extends Component
 {
     use WithPagination;

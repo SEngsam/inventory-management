@@ -96,7 +96,6 @@ it('reverses a document with the same movement type and opposite sign', function
         ->and($a)->toHaveStock(10)
         ->and($b)->toHaveStock(10);
 
-    // The net effect is already zero, so reversing again changes nothing.
     expect($this->stock->reverse($sale))->toHaveCount(0);
 });
 

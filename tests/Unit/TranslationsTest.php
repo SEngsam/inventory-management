@@ -3,9 +3,6 @@
 use Illuminate\Support\Arr;
 
 /**
- * Keys of a translation group file, ignoring the locale-specific
- * "attributes" and "custom" maps of the validation file.
- *
  * @return list<string>
  */
 function translationKeys(string $locale, string $group): array

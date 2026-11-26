@@ -30,8 +30,6 @@ class InvoiceService
                 ]);
             }
 
-            // Hold the product locks for the whole transaction so the stock
-            // check below and the deduction see the same quantities.
             $this->stock->lock(array_column($lines, 'product_id'));
             $quantities = [];
 
@@ -106,9 +104,6 @@ class InvoiceService
         }, 3);
     }
 
-    /**
-     * Delete an invoice and put its goods back into stock.
-     */
     public function delete(Invoice $invoice): void
     {
         DB::transaction(function () use ($invoice) {

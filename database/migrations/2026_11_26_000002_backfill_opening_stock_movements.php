@@ -3,11 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Seed the ledger with one "opening" movement per product that already
- * holds stock, so that SUM(stock_movements.quantity) = products.stock_quantity
- * holds from the moment the ledger is introduced.
- */
 return new class extends Migration
 {
     public function up(): void

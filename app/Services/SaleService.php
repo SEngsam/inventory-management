@@ -14,16 +14,10 @@ class SaleService
     ) {}
 
     /**
-     * Create or update a sale and its items.
-     *
-     * Only completed sales take stock out. When a sale is edited, the stock
-     * it previously took is put back and the new items are applied, all in
-     * one transaction with every affected product locked.
-     *
      * @param  array{reference_no: string, sale_date: string, status: string, note?: ?string, customer_id?: ?int}  $data
      * @param  list<array{product_id: int|string, quantity: int|string, unit_price: float|string}>  $items
      *
-     * @throws ValidationException when stock is insufficient or the sale already has returns
+     * @throws ValidationException
      */
     public function save(array $data, array $items, ?Sale $sale = null): Sale
     {
@@ -62,9 +56,7 @@ class SaleService
     }
 
     /**
-     * Delete a sale and put back any stock it took.
-     *
-     * @throws ValidationException when the sale already has returns
+     * @throws ValidationException
      */
     public function delete(Sale $sale): void
     {
@@ -78,10 +70,6 @@ class SaleService
         });
     }
 
-    /**
-     * Returns are validated against the quantities sold, so changing or
-     * removing a sale after goods came back would corrupt both documents.
-     */
     private function ensureHasNoReturns(Sale $sale): void
     {
         if ($sale->returns()->exists()) {

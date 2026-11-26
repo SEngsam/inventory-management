@@ -8,8 +8,6 @@ use App\Models\PurchaseItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * A line item record only; it does not change stock.
- *
  * @extends Factory<PurchaseItem>
  */
 class PurchaseItemFactory extends Factory

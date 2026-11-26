@@ -15,10 +15,7 @@ class SaleReturnService
     ) {}
 
     /**
-     * How many units of each product can still be returned for a sale:
-     * the quantity sold minus everything already returned.
-     *
-     * @return array<int, int> product id => returnable quantity
+     * @return array<int, int>
      */
     public function returnableQuantities(Sale $sale): array
     {
@@ -42,14 +39,8 @@ class SaleReturnService
     }
 
     /**
-     * Record goods coming back from a completed sale and add them to stock.
-     *
-     * Unit prices are taken from the original sale, not from user input.
-     * The sale row is locked so two concurrent returns cannot both pass the
-     * "not more than sold" check.
-     *
      * @param  array{reference_no: string, return_date: string, note?: ?string}  $data
-     * @param  array<int, int>  $quantities  product id => quantity to return (zeros are ignored)
+     * @param  array<int, int>  $quantities
      *
      * @throws ValidationException
      */
@@ -121,9 +112,7 @@ class SaleReturnService
     }
 
     /**
-     * Delete a return and take its goods back out of stock.
-     *
-     * @throws ValidationException when the returned goods have since been sold
+     * @throws ValidationException
      */
     public function delete(SaleReturn $return): void
     {
