@@ -2,12 +2,12 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Services\InvoiceService;
-use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Invoice;
+use App\Models\Product;
+use App\Services\InvoiceService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class InvoiceServiceTest extends TestCase
 {
@@ -26,16 +26,15 @@ class InvoiceServiceTest extends TestCase
     {
         $customer = Customer::factory()->create();
 
-        $product1 = Product::factory()->create(['price' => 10]);
-        $product2 = Product::factory()->create(['price' => 15]);
+        $product1 = Product::factory()->create(['price' => 10, 'stock_quantity' => 10]);
+        $product2 = Product::factory()->create(['price' => 15, 'stock_quantity' => 10]);
 
-        $items = [
-            ['product_id' => $product1->id, 'quantity' => 2, 'price' => $product1->price],
-            ['product_id' => $product2->id, 'quantity' => 3, 'price' => $product2->price],
+        $lines = [
+            $this->line($product1, 2),
+            $this->line($product2, 3),
         ];
 
-
-        $invoice = $this->invoiceService->createFromSale($items, $customer);
+        $invoice = $this->invoiceService->createFromSale(['customer_id' => $customer->id], $lines);
 
         $this->assertInstanceOf(Invoice::class, $invoice);
         $this->assertEquals($customer->id, $invoice->customer_id);
@@ -44,10 +43,27 @@ class InvoiceServiceTest extends TestCase
 
         $this->assertEquals($product1->id, $invoice->items[0]->product_id);
         $this->assertEquals(2, $invoice->items[0]->quantity);
-        $this->assertEquals(10, $invoice->items[0]->price);
+        $this->assertEquals(10, $invoice->items[0]->unit_price);
 
         $this->assertEquals($product2->id, $invoice->items[1]->product_id);
         $this->assertEquals(3, $invoice->items[1]->quantity);
-        $this->assertEquals(15, $invoice->items[1]->price);
+        $this->assertEquals(15, $invoice->items[1]->unit_price);
+
+        $this->assertEquals(8, $product1->fresh()->stock_quantity);
+        $this->assertEquals(7, $product2->fresh()->stock_quantity);
+    }
+
+    private function line(Product $product, int $quantity): array
+    {
+        return [
+            'product_id' => $product->id,
+            'quantity' => $quantity,
+            'unit_price' => $product->price,
+            'tax_value' => null,
+            'tax_type' => 'percent',
+            'discount' => 0,
+            'line_tax' => 0,
+            'line_total' => $product->price * $quantity,
+        ];
     }
 }
