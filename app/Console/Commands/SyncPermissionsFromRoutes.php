@@ -10,6 +10,7 @@ use Spatie\Permission\Models\Role;
 class SyncPermissionsFromRoutes extends Command
 {
     protected $signature = 'permissions:sync';
+
     protected $description = 'Sync permissions from named routes';
 
     public function handle()
@@ -21,7 +22,7 @@ class SyncPermissionsFromRoutes extends Command
 
             $name = $route->getName();
 
-            if (!$name) {
+            if (! $name) {
                 continue;
             }
 
@@ -35,7 +36,7 @@ class SyncPermissionsFromRoutes extends Command
                 continue;
             }
 
-            if (!Permission::where('name', $name)->exists()) {
+            if (! Permission::where('name', $name)->exists()) {
                 Permission::create(['name' => $name]);
                 $created++;
                 $this->info("Created permission: $name");
@@ -47,6 +48,6 @@ class SyncPermissionsFromRoutes extends Command
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $adminRole->syncPermissions(Permission::all());
 
-        $this->info("Admin role synced with all permissions.");
+        $this->info('Admin role synced with all permissions.');
     }
 }

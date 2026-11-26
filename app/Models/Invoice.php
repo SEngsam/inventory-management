@@ -3,12 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Invoice extends Model
 {
-    protected $fillable = ['customer_id', 'total', 'issued_at'];
+    protected $fillable = [
+        'invoice_number',
+        'status',
+        'customer_id',
+        'user_id',
+        'issued_at',
+        'subtotal',
+        'tax_total',
+        'discount_total',
+        'total',
+    ];
 
     protected $casts = [
         'issued_at' => 'datetime',
@@ -23,6 +33,7 @@ class Invoice extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

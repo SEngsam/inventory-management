@@ -7,7 +7,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InvoiceItem extends Model
 {
-    protected $fillable = ['invoice_id', 'product_id', 'quantity', 'price'];
+    protected $fillable = [
+        'invoice_id',
+        'product_id',
+        'quantity',
+        'unit_price',
+        'tax_value',
+        'tax_type',
+        'discount',
+        'line_tax',
+        'line_total',
+    ];
 
     public function invoice(): BelongsTo
     {

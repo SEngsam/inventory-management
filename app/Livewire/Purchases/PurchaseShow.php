@@ -1,12 +1,14 @@
 <?php
+
 namespace App\Livewire\Purchases;
 
-use Livewire\Component;
 use App\Models\Purchase;
+use Livewire\Component;
 
 class PurchaseShow extends Component
 {
     public $purchaseId;
+
     public $purchase;
 
     public function mount($purchaseId)
@@ -14,8 +16,8 @@ class PurchaseShow extends Component
         $this->purchaseId = $purchaseId;
         $this->purchase = Purchase::with(['supplier', 'items.product'])->find($purchaseId);
 
-        if (!$this->purchase) {
-            abort(404, 'Purchase not found');
+        if (! $this->purchase) {
+            abort(404);
         }
     }
 

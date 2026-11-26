@@ -2,22 +2,29 @@
 
 namespace App\Livewire\Products;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
 use App\Models\Brand;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class BrandManager extends Component
 {
     use WithFileUploads;
 
     public $brands;
+
     public $brand_id;
+
     public $name;
+
     public $description;
+
     public $image;
+
     public $newImage;
+
     public $isEdit = false;
+
     public $selectedBrands = [];
 
     public function mount()
@@ -67,8 +74,8 @@ class BrandManager extends Component
         session()->flash(
             'message',
             $isUpdating
-                ? 'Brand updated successfully.'
-                : 'Brand created successfully.'
+                ? __('messages.brand.updated')
+                : __('messages.brand.created')
         );
     }
 
@@ -101,7 +108,7 @@ class BrandManager extends Component
 
             $this->selectedBrands = [];
             $this->loadBrands();
-            session()->flash('message', 'Selected brands deleted successfully.');
+            session()->flash('message', __('messages.brand.bulk_deleted'));
         }
     }
 

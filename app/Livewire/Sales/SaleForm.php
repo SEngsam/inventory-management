@@ -2,26 +2,32 @@
 
 namespace App\Livewire\Sales;
 
-use Livewire\Component;
-use App\Models\Product;
 use App\Models\Customer;
+use App\Models\Product;
 use App\Models\Sale;
-use App\Models\SaleItem;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Livewire\Component;
 
 class SaleForm extends Component
 {
     public $saleId;
+
     public $reference_no = '';
+
     public $sale_date = '';
+
     public $status = 'completed';
+
     public $note = '';
+
     public $customer_id;
+
     public $items = [];
 
     public $products;
+
     public $customers;
 
     public function mount($id = null)
@@ -39,7 +45,7 @@ class SaleForm extends Component
             $this->note = $sale->note;
             $this->customer_id = $sale->customer_id;
 
-            $this->items = $sale->items->map(fn($item) => [
+            $this->items = $sale->items->map(fn ($item) => [
                 'product_id' => $item->product_id,
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
@@ -54,7 +60,7 @@ class SaleForm extends Component
     protected function generateReference(): string
     {
         do {
-            $ref = 'SL-' . strtoupper(Str::random(6));
+            $ref = 'SL-'.strtoupper(Str::random(6));
         } while (Sale::where('reference_no', $ref)->exists());
 
         return $ref;
@@ -81,65 +87,66 @@ class SaleForm extends Component
         }
     }
 
-public function save()
-{
-    $this->validate([
-        'reference_no' => 'required|string|unique:sales,reference_no' . ($this->saleId ? ',' . $this->saleId : ''),
-        'sale_date' => 'required|date',
-        'status' => 'required|in:pending,completed,cancelled',
-        'customer_id' => 'nullable|exists:customers,id',
-        'items' => 'required|array|min:1',
-        'items.*.product_id' => 'required|exists:products,id',
-        'items.*.quantity' => 'required|integer|min:1',
-        'items.*.unit_price' => 'required|numeric|min:0',
-    ]);
+    public function save()
+    {
+        $this->validate([
+            'reference_no' => 'required|string|unique:sales,reference_no'.($this->saleId ? ','.$this->saleId : ''),
+            'sale_date' => 'required|date',
+            'status' => 'required|in:pending,completed,cancelled',
+            'customer_id' => 'nullable|exists:customers,id',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.unit_price' => 'required|numeric|min:0',
+        ]);
 
-    DB::transaction(function () {
-        $sale = Sale::updateOrCreate(
-            ['id' => $this->saleId],
-            [
-                'reference_no' => $this->reference_no,
-                'sale_date' => $this->sale_date,
-                'status' => $this->status,
-                'note' => $this->note,
-                'customer_id' => $this->customer_id,
-            ]
-        );
+        DB::transaction(function () {
+            $sale = Sale::updateOrCreate(
+                ['id' => $this->saleId],
+                [
+                    'reference_no' => $this->reference_no,
+                    'sale_date' => $this->sale_date,
+                    'status' => $this->status,
+                    'note' => $this->note,
+                    'customer_id' => $this->customer_id,
+                ]
+            );
 
-        if ($this->saleId) {
-            // Delete old sale items if editing
-            $sale->items()->delete();
-        }
-
-        foreach ($this->items as $item) {
-            $product = Product::findOrFail($item['product_id']);
-
-            if ($this->status === 'completed') {
-                // Check stock availability before deducting
-                if ($product->stock_quantity < $item['quantity']) {
-                    throw new \Exception("The available quantity for product {$product->name} is insufficient.");
-                }
-
-                // Deduct quantity from product stock
-                $product->stock_quantity -= $item['quantity'];
-                $product->save();
+            if ($this->saleId) {
+                // Delete old sale items if editing
+                $sale->items()->delete();
             }
 
-            // Calculate total for the sale item
-            $total = $item['quantity'] * $item['unit_price'];
+            foreach ($this->items as $item) {
+                $product = Product::findOrFail($item['product_id']);
 
-            $sale->items()->create([
-                'product_id' => $item['product_id'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['unit_price'],
-                'total' => $total,  // Important to include total to avoid SQL error
-            ]);
-        }
-    });
+                if ($this->status === 'completed') {
+                    // Check stock availability before deducting
+                    if ($product->stock_quantity < $item['quantity']) {
+                        throw new \Exception(__('messages.stock.insufficient_for', ['product' => $product->name]));
+                    }
 
-    session()->flash('success', 'Invoice was saved successfully.');
-    return redirect()->route('sales.index');
-}
+                    // Deduct quantity from product stock
+                    $product->stock_quantity -= $item['quantity'];
+                    $product->save();
+                }
+
+                // Calculate total for the sale item
+                $total = $item['quantity'] * $item['unit_price'];
+
+                $sale->items()->create([
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'total' => $total,  // Important to include total to avoid SQL error
+                ]);
+            }
+        });
+
+        session()->flash('success', __('messages.sale.saved'));
+
+        return redirect()->route('sales.index');
+    }
 
     public function render()
     {

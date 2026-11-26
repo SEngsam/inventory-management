@@ -33,7 +33,6 @@ class Product extends Model
         return $this->belongsTo(Unit::class);
     }
 
-
     // 🔁 Relationships
     public function category()
     {
@@ -44,6 +43,7 @@ class Product extends Model
     {
         return $this->belongsTo(Brand::class);
     }
+
     public function sales()
     {
         return $this->hasMany(SaleItem::class);
@@ -52,7 +52,7 @@ class Product extends Model
     public function getImageUrlAttribute()
     {
         return $this->product_image
-            ? asset('storage/' . $this->product_image)
+            ? asset('storage/'.$this->product_image)
             : asset('images/no-image.png');
     }
 

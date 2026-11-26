@@ -69,7 +69,7 @@
                         <button type="submit" class="btn btn-success">
                             {{ $customer ? 'Update' : 'Save' }}
                         </button>
-                        <a href="{{ route('customer.index') }}" class="btn btn-secondary">Cancel</a>
+                        <a href="{{ route('customers.index') }}" class="btn btn-secondary">Cancel</a>
                     </form>
                 </div>
             </div>

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Product;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -16,7 +15,7 @@ class ProductSeeder extends Seeder
     {
         Product::create([
             'name' => 'iPhone 15 Pro Max',
-            'sku' => 'SKU-' . Str::random(6),
+            'sku' => 'SKU-'.Str::random(6),
             'image' => 'product_images/iphone15.png',
             'category_id' => 1,
             'brand_id' => 1,
@@ -33,7 +32,7 @@ class ProductSeeder extends Seeder
 
         Product::create([
             'name' => 'Samsung Galaxy S24 Ultra',
-            'sku' => 'SKU-' . Str::random(6),
+            'sku' => 'SKU-'.Str::random(6),
             'image' => 'product_images/s24ultra.png',
             'category_id' => 1,
             'brand_id' => 2,

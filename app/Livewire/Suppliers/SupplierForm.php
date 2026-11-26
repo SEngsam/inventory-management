@@ -2,15 +2,26 @@
 
 namespace App\Livewire\Suppliers;
 
-use Livewire\Component;
 use App\Models\Supplier;
+use Livewire\Component;
 
 class SupplierForm extends Component
 {
     public $supplierId;
+
     public $supplier;
 
-    public $name, $email, $phone, $company, $address, $note;
+    public $name;
+
+    public $email;
+
+    public $phone;
+
+    public $company;
+
+    public $address;
+
+    public $note;
 
     protected $listeners = ['resetForm'];
 
@@ -29,7 +40,6 @@ class SupplierForm extends Component
 
     public function save()
     {
-  
 
         $this->validate([
             'name' => 'required|string|max:255',
@@ -52,9 +62,9 @@ class SupplierForm extends Component
             ]
         );
 
-        session()->flash('message', $this->supplierId ? 'Supplier updated!' : 'Supplier created!');
+        session()->flash('message', $this->supplierId ? __('messages.supplier.updated') : __('messages.supplier.created'));
 
-         $this->dispatch($this->supplierId ? 'supplierUpdated' : 'supplierAdded');
+        $this->dispatch($this->supplierId ? 'supplierUpdated' : 'supplierAdded');
 
         return redirect()->route('suppliers.index');
     }

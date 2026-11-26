@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Unit;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UnitSeeder extends Seeder
@@ -18,7 +17,7 @@ class UnitSeeder extends Seeder
             'short_code' => 'pc',
             'base_unit_id' => null,
             'operator' => null,
-            'operator_value' => null
+            'operator_value' => null,
         ]);
 
         $kg = Unit::create([
@@ -26,7 +25,7 @@ class UnitSeeder extends Seeder
             'short_code' => 'kg',
             'base_unit_id' => null,
             'operator' => null,
-            'operator_value' => null
+            'operator_value' => null,
         ]);
 
         // Related Units
@@ -35,7 +34,7 @@ class UnitSeeder extends Seeder
             'short_code' => 'dz',
             'base_unit_id' => $piece->id,
             'operator' => '*',
-            'operator_value' => 12
+            'operator_value' => 12,
         ]);
 
         Unit::create([
@@ -43,7 +42,7 @@ class UnitSeeder extends Seeder
             'short_code' => 'g',
             'base_unit_id' => $kg->id,
             'operator' => '/',
-            'operator_value' => 1000
+            'operator_value' => 1000,
         ]);
     }
 }

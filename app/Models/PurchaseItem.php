@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseItem extends Model
 {
     use HasFactory;
+
     protected $fillable = ['purchase_id', 'product_id', 'quantity', 'unit_cost', 'total'];
 
     public function purchase()
@@ -19,6 +20,7 @@ class PurchaseItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
     public function items()
     {
         return $this->hasMany(PurchaseItem::class);

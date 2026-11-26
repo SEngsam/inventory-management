@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Sales;
 
-use Livewire\Component;
 use App\Models\Sale;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class SaleList extends Component
@@ -19,7 +19,7 @@ class SaleList extends Component
         if ($sale->status === 'completed') {
             foreach ($sale->items as $item) {
                 $product = $item->product;
-                $product->stock_quantity  += $item->quantity;
+                $product->stock_quantity += $item->quantity;
                 $product->save();
             }
         }
@@ -27,7 +27,7 @@ class SaleList extends Component
         $sale->items()->delete();
         $sale->delete();
 
-        session()->flash('success', 'Invoice Successfully Deleted');
+        session()->flash('success', __('messages.sale.deleted'));
         $this->resetPage();
     }
 

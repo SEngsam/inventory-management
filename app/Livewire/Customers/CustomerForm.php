@@ -2,18 +2,23 @@
 
 namespace App\Livewire\Customers;
 
-use Livewire\Component;
 use App\Models\Customer;
+use Livewire\Component;
 
 class CustomerForm extends Component
 {
     public $customer;
 
     public $name;
+
     public $email;
+
     public $phone;
+
     public $company;
+
     public $address;
+
     public $note;
 
     public function mount(?Customer $customer = null)
@@ -21,7 +26,6 @@ class CustomerForm extends Component
         $this->customer = $customer;
 
         if ($this->customer) {
-        
 
             $this->name = $customer->name;
             $this->email = $customer->email;
@@ -30,13 +34,12 @@ class CustomerForm extends Component
             $this->address = $customer->address;
             $this->note = $customer->note;
         } else {
-            
+
         }
     }
 
     public function save()
     {
-     
 
         $validated = $this->validate([
             'name' => 'required|string|max:255',
@@ -49,10 +52,10 @@ class CustomerForm extends Component
 
         if ($this->customer) {
             $this->customer->update($validated);
-            session()->flash('message', 'Customer updated successfully.');
+            session()->flash('message', __('messages.customer.updated'));
         } else {
             Customer::create($validated);
-            session()->flash('message', 'Customer created successfully.');
+            session()->flash('message', __('messages.customer.created'));
         }
 
         return redirect()->route('customers.index');

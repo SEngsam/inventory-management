@@ -2,23 +2,26 @@
 
 namespace App\Livewire\Invoices;
 
-use Livewire\Component;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Services\InvoiceService;
 use Illuminate\Validation\ValidationException;
+use Livewire\Component;
 
 class CreateInvoice extends Component
 {
     public $customers;
+
     public $products;
+
     public $selectedCustomer;
+
     public $items = [];
 
     public function mount(): void
     {
         $this->customers = Customer::query()->orderBy('name')->get();
-        $this->products  = Product::query()->orderBy('name')->get();
+        $this->products = Product::query()->orderBy('name')->get();
 
         $this->items[] = ['product_id' => null, 'quantity' => 1];
     }
@@ -55,14 +58,15 @@ class CreateInvoice extends Component
         $customer = Customer::findOrFail($this->selectedCustomer);
 
         $merged = collect($this->items)
-            ->filter(fn ($row) => !empty($row['product_id']))
+            ->filter(fn ($row) => ! empty($row['product_id']))
             ->groupBy('product_id')
             ->map(function ($rows) {
-                return (int) $rows->sum(fn ($r) => (int)($r['quantity'] ?? 1));
+                return (int) $rows->sum(fn ($r) => (int) ($r['quantity'] ?? 1));
             });
 
         if ($merged->isEmpty()) {
-            $this->addError('items', 'Please select at least one product.');
+            $this->addError('items', __('messages.items.select_product'));
+
             return;
         }
 
@@ -78,17 +82,21 @@ class CreateInvoice extends Component
         $taxTotal = 0.0;
 
         foreach ($merged as $pid => $qty) {
-            $product = $products->get((int)$pid);
+            $product = $products->get((int) $pid);
 
-            if (!$product) {
+            if (! $product) {
                 throw ValidationException::withMessages([
-                    'items' => 'One or more selected products were not found.',
+                    'items' => __('messages.items.products_not_found'),
                 ]);
             }
 
-            if ((int)$product->stock_quantity < (int)$qty) {
+            if ((int) $product->stock_quantity < (int) $qty) {
                 throw ValidationException::withMessages([
-                    'items' => "Insufficient stock for {$product->name}. Available: {$product->stock_quantity}, Requested: {$qty}",
+                    'items' => __('messages.stock.insufficient_detail', [
+                        'product' => $product->name,
+                        'available' => $product->stock_quantity,
+                        'requested' => $qty,
+                    ]),
                 ]);
             }
 
@@ -96,13 +104,13 @@ class CreateInvoice extends Component
             $lineSub = $unitPrice * $qty;
 
             $taxValue = $product->tax_value !== null ? (float) $product->tax_value : null;
-            $taxType  = $product->tax_type ?? 'percent';
+            $taxType = $product->tax_type ?? 'percent';
 
             $lineTax = 0.0;
             if ($taxValue !== null) {
                 $lineTax = $taxType === 'percent'
                     ? ($lineSub * ($taxValue / 100))
-                    : ($taxValue * $qty);  
+                    : ($taxValue * $qty);
             }
 
             $lineTotal = $lineSub + $lineTax;
@@ -112,24 +120,24 @@ class CreateInvoice extends Component
 
             $lines[] = [
                 'product_id' => (int) $product->id,
-                'quantity'   => (int) $qty,
+                'quantity' => (int) $qty,
 
                 'unit_price' => round($unitPrice, 2),
-                'tax_value'  => $taxValue !== null ? round($taxValue, 2) : null,
-                'tax_type'   => $taxType,
+                'tax_value' => $taxValue !== null ? round($taxValue, 2) : null,
+                'tax_type' => $taxType,
 
-                'discount'   => 0,  
+                'discount' => 0,
 
-                'line_tax'   => round($lineTax, 2),
+                'line_tax' => round($lineTax, 2),
                 'line_total' => round($lineTotal, 2),
             ];
         }
 
         $payload = [
             'customer_id' => $customer->id,
-            'issued_at'   => now(),
-            'status'      => 'issued',
-   
+            'issued_at' => now(),
+            'status' => 'issued',
+
         ];
 
         $invoice = app(InvoiceService::class)->createFromSale($payload, $lines);

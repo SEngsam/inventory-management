@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('reference_no')->unique();
             $table->date('return_date');
-             $table->unsignedBigInteger('sale_id');
+            $table->unsignedBigInteger('sale_id');
             $table->unsignedBigInteger('customer_id')->nullable();
-           
+
             $table->text('note')->nullable();
             $table->timestamps();
-             $table->foreign('sale_id')->references('id')->on('sales')->onDelete('cascade');
+            $table->foreign('sale_id')->references('id')->on('sales')->onDelete('cascade');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
 
         });

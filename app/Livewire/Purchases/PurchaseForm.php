@@ -2,25 +2,33 @@
 
 namespace App\Livewire\Purchases;
 
-use Livewire\Component;
-use App\Models\Supplier;
 use App\Models\Product;
 use App\Models\Purchase;
-use Illuminate\Support\Str;
+use App\Models\Supplier;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use Livewire\Component;
 
 class PurchaseForm extends Component
 {
     public $purchase;
+
     public $purchaseId;
+
     public $supplier_id;
+
     public $purchase_date;
+
     public $reference_no;
+
     public $status = 'received';
+
     public $notes;
 
     public $suppliers;
+
     public $products;
+
     public $items = [];
 
     public function mount($id = null)
@@ -30,7 +38,7 @@ class PurchaseForm extends Component
 
         if ($id) {
             $purchase = Purchase::with('items')->findOrFail($id);
-            // تعديل موجود
+            // Editing an existing purchase
             $this->purchaseId = $purchase->id;
             $this->fill($purchase->only('supplier_id', 'purchase_date', 'reference_no', 'status', 'notes'));
             $this->items = $purchase->items->map(function ($item) {
@@ -41,13 +49,12 @@ class PurchaseForm extends Component
                 ];
             })->toArray();
         } else {
-            // إنشاء جديد
-            $this->reference_no = 'REF-' . strtoupper(Str::random(6));
+            // Creating a new purchase
+            $this->reference_no = 'REF-'.strtoupper(Str::random(6));
             $this->purchase_date = Carbon::now()->format('Y-m-d');
             $this->items[] = ['product_id' => '', 'quantity' => 1, 'unit_cost' => 0];
         }
     }
-
 
     public function addItem()
     {
@@ -69,7 +76,8 @@ class PurchaseForm extends Component
         ]);
 
         if (empty($this->items)) {
-            $this->addError('items', 'At least one item is required.');
+            $this->addError('items', __('messages.items.required'));
+
             return;
         }
 
@@ -77,11 +85,13 @@ class PurchaseForm extends Component
 
         foreach ($this->items as $index => $item) {
             if (empty($item['product_id'])) {
-                $this->addError("items.$index.product_id", 'Product is required.');
+                $this->addError("items.$index.product_id", __('messages.items.product_required'));
+
                 return;
             }
             if ($item['quantity'] <= 0 || $item['unit_cost'] < 0) {
-                $this->addError("items.$index.quantity", 'Quantity and cost must be positive.');
+                $this->addError("items.$index.quantity", __('messages.items.quantity_cost_positive'));
+
                 return;
             }
             $totalAmount += $item['quantity'] * $item['unit_cost'];
@@ -99,7 +109,7 @@ class PurchaseForm extends Component
         );
 
         if ($this->purchaseId) {
-            // تحديث المخزون: نطرح الكميات القديمة قبل تحديث العناصر الجديدة
+            // Reverse the stock added by the old items before saving the new ones
             foreach ($purchase->items as $oldItem) {
                 $oldItem->product->decrement('stock_quantity', $oldItem->quantity);
             }
@@ -120,7 +130,8 @@ class PurchaseForm extends Component
             }
         }
 
-        session()->flash('message', $this->purchaseId ? 'Purchase updated!' : 'Purchase created!');
+        session()->flash('message', $this->purchaseId ? __('messages.purchase.updated') : __('messages.purchase.created'));
+
         return redirect()->route('purchases.index');
     }
 

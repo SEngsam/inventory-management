@@ -8,10 +8,20 @@ use Livewire\Component;
 class ManageCurrencies extends Component
 {
     public $currencies;
+
     public $currency_id;
-    public $name, $symbol, $rate;
+
+    public $name;
+
+    public $symbol;
+
+    public $rate;
+
     public $is_active = true;
-    public $selectedCurrency = [], $selectAll = false;
+
+    public $selectedCurrency = [];
+
+    public $selectAll = false;
 
     protected $rules = [
         'name' => 'required|string',
@@ -22,6 +32,7 @@ class ManageCurrencies extends Component
     public function render()
     {
         $this->currencies = Currency::orderByDesc('is_default')->get();
+
         return view('livewire.settings.manage-currencies');
     }
 
@@ -37,7 +48,7 @@ class ManageCurrencies extends Component
         ]);
 
         $this->resetInput();
-        session()->flash('message', 'Currency added successfully!');
+        session()->flash('message', __('messages.currency.created'));
     }
 
     public function edit($id)
@@ -62,21 +73,21 @@ class ManageCurrencies extends Component
         ]);
 
         $this->resetInput();
-        session()->flash('message', 'Currency updated successfully!');
+        session()->flash('message', __('messages.currency.updated'));
     }
 
     public function delete($id)
     {
         Currency::findOrFail($id)->delete();
         $this->resetInput();
-        session()->flash('message', 'Currency deleted');
+        session()->flash('message', __('messages.currency.deleted'));
     }
 
     public function makeDefault($id)
     {
         Currency::where('is_default', true)->update(['is_default' => false]);
         Currency::findOrFail($id)->update(['is_default' => true]);
-        session()->flash('message', 'Default currency set!');
+        session()->flash('message', __('messages.currency.default_set'));
     }
 
     public function resetInput()
@@ -88,5 +99,3 @@ class ManageCurrencies extends Component
         $this->is_active = true;
     }
 }
-
-

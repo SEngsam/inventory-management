@@ -3,12 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,9 +25,6 @@ class DatabaseSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
-
-    
-
         $this->call([
             CategorySeeder::class,
             BrandSeeder::class,
@@ -37,7 +32,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             SupplierSeeder::class,
             CustomerSeeder::class,
-            InvoiceSeeder::class
+            InvoiceSeeder::class,
 
         ]);
     }

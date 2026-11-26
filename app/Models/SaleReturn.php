@@ -17,9 +17,11 @@ class SaleReturn extends Model
         'note',
         'total',
     ];
+
     protected $casts = [
         'return_date' => 'datetime',
     ];
+
     protected $with = ['items.product', 'customer', 'sale'];
 
     public function items()

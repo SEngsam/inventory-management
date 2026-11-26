@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Suppliers;
 
-use Livewire\Component;
 use App\Models\Supplier;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class SupplierList extends Component
@@ -11,6 +11,7 @@ class SupplierList extends Component
     use WithPagination;
 
     public $selectedSuppliers = [];
+
     public $selectAll = false;
 
     protected $listeners = [
@@ -20,9 +21,7 @@ class SupplierList extends Component
 
     protected $paginationTheme = 'bootstrap';
 
-    public function mount(): void
-    {
-    }
+    public function mount(): void {}
 
     public function updatedSelectAll($value): void
     {
@@ -40,10 +39,10 @@ class SupplierList extends Component
     public function deleteSelected(): void
     {
 
-        if (!empty($this->selectedSuppliers)) {
+        if (! empty($this->selectedSuppliers)) {
             Supplier::whereIn('id', $this->selectedSuppliers)->delete();
 
-            session()->flash('message', 'Selected suppliers deleted!');
+            session()->flash('message', __('messages.supplier.bulk_deleted'));
             $this->selectedSuppliers = [];
             $this->selectAll = false;
             $this->resetPage();
@@ -56,7 +55,7 @@ class SupplierList extends Component
         $supplier = Supplier::find($supplierId);
         if ($supplier) {
             $supplier->delete();
-            session()->flash('message', 'Supplier deleted!');
+            session()->flash('message', __('messages.supplier.deleted'));
         }
 
         $this->resetPage();

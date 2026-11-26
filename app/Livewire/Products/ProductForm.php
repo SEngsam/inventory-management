@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Products;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
-use App\Models\Product;
-use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class ProductForm extends Component
 {
@@ -16,21 +16,49 @@ class ProductForm extends Component
 
     public $productId;
 
-    public $name, $sku, $code, $type = 'standard';
-    public $price, $description, $tax_value, $tax_type = 'percent';
-    public $stock_quantity = 0, $category_id, $brand_id, $unit_id;
-    public $warranty_period, $has_warranty = false;
-    public $has_imei = false, $image, $new_product_image;
+    public $name;
+
+    public $sku;
+
+    public $code;
+
+    public $type = 'standard';
+
+    public $price;
+
+    public $description;
+
+    public $tax_value;
+
+    public $tax_type = 'percent';
+
+    public $stock_quantity = 0;
+
+    public $category_id;
+
+    public $brand_id;
+
+    public $unit_id;
+
+    public $warranty_period;
+
+    public $has_warranty = false;
+
+    public $has_imei = false;
+
+    public $image;
+
+    public $new_product_image;
 
     public $categories = [];
+
     public $brands = [];
+
     public $units = [];
 
     public function mount($product = null): void
     {
-         $this->productId = $product;
-
- 
+        $this->productId = $product;
 
         $this->categories = Category::all();
         $this->brands = Brand::all();
@@ -39,7 +67,7 @@ class ProductForm extends Component
         if ($this->productId) {
             $p = Product::findOrFail($this->productId);
             $this->fill($p->toArray());
-            $this->image = $p->image; 
+            $this->image = $p->image;
         }
     }
 
@@ -47,7 +75,7 @@ class ProductForm extends Component
     {
         return [
             'name' => 'required|string|max:255',
-            'sku' => 'required|string|unique:products,sku,' . $this->productId,
+            'sku' => 'required|string|unique:products,sku,'.$this->productId,
             'code' => 'nullable|string|max:255',
             'type' => 'required|in:standard,service',
             'price' => 'required|numeric|min:0',
@@ -59,7 +87,7 @@ class ProductForm extends Component
             'unit_id' => 'nullable|exists:units,id',
             'warranty_period' => 'nullable|string',
             'has_warranty' => 'boolean',
-         
+
             'has_imei' => 'boolean',
             'description' => 'nullable|string',
             'new_product_image' => 'nullable|image|max:2048',
@@ -68,14 +96,14 @@ class ProductForm extends Component
 
     public function save()
     {
-      
+
         $this->validate();
 
         $data = $this->only([
             'name', 'sku', 'code', 'type', 'price', 'description',
             'tax_value', 'tax_type', 'stock_quantity', 'category_id',
             'brand_id', 'unit_id', 'warranty_period', 'has_warranty',
-             'has_imei',
+            'has_imei',
         ]);
 
         $data['has_warranty'] = $this->has_warranty ? 1 : 0;
@@ -94,7 +122,7 @@ class ProductForm extends Component
 
         Product::updateOrCreate(['id' => $this->productId], $data);
 
-        session()->flash('message', $this->productId ? 'Product updated successfully!' : 'Product created successfully!');
+        session()->flash('message', $this->productId ? __('messages.product.updated') : __('messages.product.created'));
 
         return redirect()->route('products.list');
     }

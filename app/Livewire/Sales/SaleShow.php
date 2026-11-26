@@ -8,6 +8,7 @@ use Livewire\Component;
 class SaleShow extends Component
 {
     public $id;
+
     public $sale;
 
     public function mount()

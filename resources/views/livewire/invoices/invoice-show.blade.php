@@ -160,11 +160,6 @@
                                     <i class="mdi mdi-printer me-1"></i>PDF
                                 </a>
 
-                                <a href="{{ route('export', ['format' => 'excel', 'type' => 'invoice', 'id' => $invoice->id]) }}"
-                                    class="btn btn-success border-0">
-                                    <i class="mdi mdi-file-excel me-1"></i>Excel
-                                </a>
-
                                 <a href="{{ route('invoices.index') }}" class="btn btn-outline-secondary">
                                     Back
                                 </a>

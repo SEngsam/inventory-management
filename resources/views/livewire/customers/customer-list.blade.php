@@ -67,7 +67,7 @@
                                 <td>{{ $customer->phone }}</td>
                                 <td>{{ Str::limit($customer->note, 30) }}</td>
                                 <td>
-                                    <a href="{{ route('customer.edit', $customer->id) }}">
+                                    <a href="{{ route('customers.edit', $customer->id) }}">
                                         <i class="mdi mdi-pencil text-muted fs-18 rounded-2 border p-1 me-1"></i>
                                     </a>
                                     <button wire:click="delete({{ $customer->id }})"

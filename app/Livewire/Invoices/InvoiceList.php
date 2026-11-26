@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Invoices;
 
-use Livewire\Component;
 use App\Models\Invoice;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class InvoiceList extends Component
@@ -11,13 +11,12 @@ class InvoiceList extends Component
     use WithPagination;
 
     public $selectedInvoices = [];
+
     public $selectAll = false;
 
     protected $paginationTheme = 'bootstrap';
 
-    public function mount(): void
-    {
-    }
+    public function mount(): void {}
 
     public function updatedSelectAll($value): void
     {
@@ -42,7 +41,7 @@ class InvoiceList extends Component
             $this->selectAll = false;
             $this->resetPage();
 
-            session()->flash('message', 'Selected Invoices deleted successfully.');
+            session()->flash('message', __('messages.invoice.bulk_deleted'));
         }
     }
 

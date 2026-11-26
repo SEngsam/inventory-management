@@ -1,55 +1,43 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RoutingController;
-
+use App\Livewire\Customers\CustomerForm;
 // Livewire Components
-use App\Livewire\DashboardPanel;
-
+use App\Livewire\Customers\CustomerList;
 // Users
-use App\Livewire\Users\RoleManager;
-use App\Livewire\Users\UserManager;
-
+use App\Livewire\DashboardPanel;
+use App\Livewire\Invoices\CreateInvoice;
 // Settings
-use App\Livewire\Settings\ManageSettings;
-use App\Livewire\Settings\ManageCurrencies;
-
+use App\Livewire\Invoices\InvoiceList;
 // Products
-use App\Livewire\Products\ProductForm;
-use App\Livewire\Products\ProductList;
+use App\Livewire\Invoices\InvoiceShow;
 use App\Livewire\Products\BrandManager;
 use App\Livewire\Products\CategoryManager;
-use App\Livewire\Products\UnitManager;
-
+use App\Livewire\Products\ProductForm;
+use App\Livewire\Products\ProductList;
 // Purchases
+use App\Livewire\Products\UnitManager;
 use App\Livewire\Purchases\PurchaseForm;
 use App\Livewire\Purchases\PurchaseList;
-use App\Livewire\Purchases\PurchaseShow;
-
 // Sales
-use App\Livewire\Sales\SaleForm;
-use App\Livewire\Sales\SaleList;
-use App\Livewire\Sales\SaleShow;
-
-// Sale Returns
+use App\Livewire\Purchases\PurchaseShow;
 use App\Livewire\Sales\ReturnForm;
 use App\Livewire\Sales\ReturnList;
+// Sale Returns
 use App\Livewire\Sales\ReturnShow;
-
+use App\Livewire\Sales\SaleForm;
+use App\Livewire\Sales\SaleList;
 // Suppliers
+use App\Livewire\Sales\SaleShow;
+use App\Livewire\Settings\ManageCompanyBranding;
+// Customers
+use App\Livewire\Settings\ManageCurrencies;
+use App\Livewire\Settings\ManageInvoiceSettings;
+// Invoices
 use App\Livewire\Suppliers\SupplierForm;
 use App\Livewire\Suppliers\SupplierList;
-
-// Customers
-use App\Livewire\Customers\CustomerForm;
-use App\Livewire\Customers\CustomerList;
-
-// Invoices
-use App\Livewire\Invoices\CreateInvoice;
-use App\Livewire\Invoices\InvoiceList;
-use App\Livewire\Invoices\InvoiceShow;
-use App\Livewire\Settings\ManageCompanyBranding;
-use App\Livewire\Settings\ManageInvoiceSettings;
+use App\Livewire\Users\RoleManager;
+use App\Livewire\Users\UserManager;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,7 +45,7 @@ use App\Livewire\Settings\ManageInvoiceSettings;
 |--------------------------------------------------------------------------
 */
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -239,13 +227,4 @@ Route::middleware(['auth', 'access.control'])->group(function () {
         \App\Http\Controllers\ExportController::class
     )->name('export');
 
-
-    Route::get('{first}/{second}/{third}', [RoutingController::class, 'thirdLevel'])
-        ->name('third');
-
-    Route::get('{first}/{second}', [RoutingController::class, 'secondLevel'])
-        ->name('second');
-
-    Route::get('{any}', [RoutingController::class, 'root'])
-        ->name('any');
 });

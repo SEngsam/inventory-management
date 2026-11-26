@@ -74,10 +74,6 @@
                                         <a href="{{ route('sale-returns.show', $return->id) }}">
                                             <i class="mdi mdi-eye text-muted fs-18 rounded-2 border p-1 me-1"></i>
                                         </a>
-                                        {{-- {{ route('sale-returns.pdf', $return->id) }} --}}
-                                        <a href="" target="_blank">
-                                            <i class="mdi mdi-printer text-muted fs-18 rounded-2 border p-1 me-1"></i>
-                                        </a>
                                         <button wire:click="confirmDelete({{ $return->id }})"
                                             onclick="return confirm('Are you sure?')">
                                             <i class="mdi mdi-delete text-danger fs-18 rounded-2 border p-1"></i>

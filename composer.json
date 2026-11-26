@@ -1,10 +1,12 @@
 {
-    "name": "laravel/laravel",
+    "name": "sengsam/inventory-management",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Inventory management for products, purchases, sales, returns and invoices, built with Laravel and Livewire.",
     "keywords": [
         "laravel",
-        "framework"
+        "livewire",
+        "inventory",
+        "stock-management"
     ],
     "license": "MIT",
     "require": {
@@ -13,7 +15,6 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.5",
-        "maatwebsite/excel": "*",
         "spatie/laravel-permission": "^6.24"
     },
     "require-dev": {

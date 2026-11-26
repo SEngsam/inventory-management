@@ -5,10 +5,8 @@ namespace App\Jobs;
 use App\Mail\LowStockMail;
 use App\Models\Product;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Queue\Queueable;
-
+use Illuminate\Support\Facades\Mail;
 
 class LowStockAlert implements ShouldQueue
 {
@@ -30,7 +28,7 @@ class LowStockAlert implements ShouldQueue
         $lowStockProducts = Product::where('stock_quantity', '<=', 'threshold_stock')->get();
 
         foreach ($lowStockProducts as $product) {
-             
+
             Mail::to('admin@example.com')->send(new LowStockMail($product));
         }
     }

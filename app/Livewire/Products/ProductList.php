@@ -2,23 +2,22 @@
 
 namespace App\Livewire\Products;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class ProductList extends Component
 {
     use WithPagination;
 
     public $selectedProducts = [];
+
     public $selectAll = false;
 
     protected $paginationTheme = 'bootstrap';
 
-    public function mount(): void
-    {
-    }
+    public function mount(): void {}
 
     public function updatedSelectAll($value): void
     {
@@ -53,7 +52,7 @@ class ProductList extends Component
         $this->selectAll = false;
         $this->resetPage();
 
-        session()->flash('message', 'Selected products deleted successfully.');
+        session()->flash('message', __('messages.product.bulk_deleted'));
     }
 
     public function render()

@@ -8,13 +8,21 @@ use Livewire\Component;
 class UnitManager extends Component
 {
     public $units;
+
     public $unit_id;
+
     public $isEdit = false;
+
     public $name;
+
     public $short_code;
+
     public $base_unit_id;
+
     public $operator;
+
     public $operator_value;
+
     public $selectedUnits = [];
 
     public function mount()
@@ -34,7 +42,7 @@ class UnitManager extends Component
 
         $this->validate([
             'name' => 'required|string|max:255',
-            'short_code' => 'nullable|string|max:10|unique:units,short_code,' . $this->unit_id,
+            'short_code' => 'nullable|string|max:10|unique:units,short_code,'.$this->unit_id,
             'base_unit_id' => 'nullable|exists:units,id',
         ]);
 
@@ -66,8 +74,8 @@ class UnitManager extends Component
         session()->flash(
             'message',
             $isUpdating
-                ? 'Unit updated successfully.'
-                : 'Unit created successfully.'
+                ? __('messages.unit.updated')
+                : __('messages.unit.created')
         );
     }
 
@@ -80,7 +88,7 @@ class UnitManager extends Component
             $this->selectedUnits = [];
             $this->loadUnits();
 
-            session()->flash('message', 'Selected units deleted successfully.');
+            session()->flash('message', __('messages.unit.bulk_deleted'));
         }
     }
 
