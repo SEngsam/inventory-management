@@ -62,7 +62,7 @@ class CreateInvoice extends Component
             });
 
         if ($merged->isEmpty()) {
-            $this->addError('items', 'Please select at least one product.');
+            $this->addError('items', __('messages.items.select_product'));
             return;
         }
 
@@ -82,13 +82,17 @@ class CreateInvoice extends Component
 
             if (!$product) {
                 throw ValidationException::withMessages([
-                    'items' => 'One or more selected products were not found.',
+                    'items' => __('messages.items.products_not_found'),
                 ]);
             }
 
             if ((int)$product->stock_quantity < (int)$qty) {
                 throw ValidationException::withMessages([
-                    'items' => "Insufficient stock for {$product->name}. Available: {$product->stock_quantity}, Requested: {$qty}",
+                    'items' => __('messages.stock.insufficient_detail', [
+                        'product' => $product->name,
+                        'available' => $product->stock_quantity,
+                        'requested' => $qty,
+                    ]),
                 ]);
             }
 

@@ -15,7 +15,7 @@ class PurchaseShow extends Component
         $this->purchase = Purchase::with(['supplier', 'items.product'])->find($purchaseId);
 
         if (!$this->purchase) {
-            abort(404, 'Purchase not found');
+            abort(404);
         }
     }
 

@@ -24,7 +24,7 @@ class InvoiceService
 
             if (empty($lines)) {
                 throw ValidationException::withMessages([
-                    'items' => 'Invoice must have at least one item.',
+                    'items' => __('messages.invoice.empty'),
                 ]);
             }
 
@@ -78,7 +78,7 @@ class InvoiceService
 
                 if ($updated === 0) {
                     throw ValidationException::withMessages([
-                        'items' => "Insufficient stock for product ID {$productId}.",
+                        'items' => __('messages.stock.insufficient'),
                     ]);
                 }
 

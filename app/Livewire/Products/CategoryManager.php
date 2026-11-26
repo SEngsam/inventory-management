@@ -49,8 +49,8 @@ class CategoryManager extends Component
         session()->flash(
             'message',
             $isUpdating
-                ? 'Category updated successfully.'
-                : 'Category created successfully.'
+                ? __('messages.category.updated')
+                : __('messages.category.created')
         );
     }
 
@@ -61,7 +61,7 @@ class CategoryManager extends Component
             Category::whereIn('id', $this->selectedCategories)->delete();
             $this->selectedCategories = [];
             $this->loadCategories();
-            session()->flash('message', 'Selected categories deleted successfully.');
+            session()->flash('message', __('messages.category.bulk_deleted'));
         }
     }
 

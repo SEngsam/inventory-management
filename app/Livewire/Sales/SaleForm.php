@@ -117,7 +117,7 @@ public function save()
             if ($this->status === 'completed') {
                 // Check stock availability before deducting
                 if ($product->stock_quantity < $item['quantity']) {
-                    throw new \Exception("The available quantity for product {$product->name} is insufficient.");
+                    throw new \Exception(__('messages.stock.insufficient_for', ['product' => $product->name]));
                 }
 
                 // Deduct quantity from product stock
@@ -137,7 +137,7 @@ public function save()
         }
     });
 
-    session()->flash('success', 'Invoice was saved successfully.');
+    session()->flash('success', __('messages.sale.saved'));
     return redirect()->route('sales.index');
 }
 

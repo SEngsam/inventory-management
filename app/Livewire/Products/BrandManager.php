@@ -67,8 +67,8 @@ class BrandManager extends Component
         session()->flash(
             'message',
             $isUpdating
-                ? 'Brand updated successfully.'
-                : 'Brand created successfully.'
+                ? __('messages.brand.updated')
+                : __('messages.brand.created')
         );
     }
 
@@ -101,7 +101,7 @@ class BrandManager extends Component
 
             $this->selectedBrands = [];
             $this->loadBrands();
-            session()->flash('message', 'Selected brands deleted successfully.');
+            session()->flash('message', __('messages.brand.bulk_deleted'));
         }
     }
 

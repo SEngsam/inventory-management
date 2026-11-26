@@ -42,7 +42,7 @@ class InvoiceList extends Component
             $this->selectAll = false;
             $this->resetPage();
 
-            session()->flash('message', 'Selected Invoices deleted successfully.');
+            session()->flash('message', __('messages.invoice.bulk_deleted'));
         }
     }
 

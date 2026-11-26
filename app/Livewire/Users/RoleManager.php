@@ -114,7 +114,7 @@ class RoleManager extends Component
         $this->dispatch('hide-role-modal');
         $this->resetForm();
 
-        session()->flash('message', $this->isEdit ? 'Role updated successfully.' : 'Role created successfully.');
+        session()->flash('message', $this->isEdit ? __('messages.role.updated') : __('messages.role.created'));
     }
 
     public function delete($id): void
@@ -123,12 +123,12 @@ class RoleManager extends Component
         $role = Role::find($id);
         if ($role) {
             if (strtolower($role->name) === 'admin') {
-                session()->flash('message', 'Admin role cannot be deleted.');
+                session()->flash('message', __('messages.role.admin_protected'));
                 return;
             }
 
             $role->delete();
-            session()->flash('message', 'Role deleted successfully.');
+            session()->flash('message', __('messages.role.deleted'));
         }
 
         $this->resetPage();

@@ -37,7 +37,7 @@ class ManageCurrencies extends Component
         ]);
 
         $this->resetInput();
-        session()->flash('message', 'Currency added successfully!');
+        session()->flash('message', __('messages.currency.created'));
     }
 
     public function edit($id)
@@ -62,21 +62,21 @@ class ManageCurrencies extends Component
         ]);
 
         $this->resetInput();
-        session()->flash('message', 'Currency updated successfully!');
+        session()->flash('message', __('messages.currency.updated'));
     }
 
     public function delete($id)
     {
         Currency::findOrFail($id)->delete();
         $this->resetInput();
-        session()->flash('message', 'Currency deleted');
+        session()->flash('message', __('messages.currency.deleted'));
     }
 
     public function makeDefault($id)
     {
         Currency::where('is_default', true)->update(['is_default' => false]);
         Currency::findOrFail($id)->update(['is_default' => true]);
-        session()->flash('message', 'Default currency set!');
+        session()->flash('message', __('messages.currency.default_set'));
     }
 
     public function resetInput()

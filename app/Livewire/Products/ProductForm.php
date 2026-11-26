@@ -94,7 +94,7 @@ class ProductForm extends Component
 
         Product::updateOrCreate(['id' => $this->productId], $data);
 
-        session()->flash('message', $this->productId ? 'Product updated successfully!' : 'Product created successfully!');
+        session()->flash('message', $this->productId ? __('messages.product.updated') : __('messages.product.created'));
 
         return redirect()->route('products.list');
     }

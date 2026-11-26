@@ -65,7 +65,7 @@ class ReturnForm extends BaseComponent
 
         $sale = Sale::with('items')->find($this->sale_id);
         if (!$sale) {
-            session()->flash('error', 'Selected sale not found.');
+            session()->flash('error', __('messages.return.sale_not_found'));
             return;
         }
 
@@ -79,12 +79,12 @@ class ReturnForm extends BaseComponent
 
             $max = (int) ($soldQtyByProduct[$pid] ?? 0);
             if ($max <= 0) {
-                session()->flash('error', 'Invalid return items.');
+                session()->flash('error', __('messages.return.invalid_items'));
                 return;
             }
 
             if ($qty > $max) {
-                session()->flash('error', 'Return quantity cannot exceed sold quantity.');
+                session()->flash('error', __('messages.return.exceeds_sold'));
                 return;
             }
         }
@@ -122,7 +122,7 @@ class ReturnForm extends BaseComponent
             }
         }
 
-        session()->flash('message', 'Return saved successfully!');
+        session()->flash('message', __('messages.return.saved'));
         return redirect()->route('sale-returns.index');
     }
 

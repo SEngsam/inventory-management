@@ -49,10 +49,10 @@ class CustomerForm extends Component
 
         if ($this->customer) {
             $this->customer->update($validated);
-            session()->flash('message', 'Customer updated successfully.');
+            session()->flash('message', __('messages.customer.updated'));
         } else {
             Customer::create($validated);
-            session()->flash('message', 'Customer created successfully.');
+            session()->flash('message', __('messages.customer.created'));
         }
 
         return redirect()->route('customers.index');

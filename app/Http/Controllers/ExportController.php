@@ -22,7 +22,7 @@ class ExportController extends Controller
         return match ($format) {
             'pdf'   => $this->exportPdf($type, $model),
             'excel' => $this->exportExcel($type, $model),
-            default => abort(400, 'Invalid export format'),
+            default => abort(400),
         };
     }
 

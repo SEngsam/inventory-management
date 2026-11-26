@@ -69,7 +69,7 @@ class PurchaseForm extends Component
         ]);
 
         if (empty($this->items)) {
-            $this->addError('items', 'At least one item is required.');
+            $this->addError('items', __('messages.items.required'));
             return;
         }
 
@@ -77,11 +77,11 @@ class PurchaseForm extends Component
 
         foreach ($this->items as $index => $item) {
             if (empty($item['product_id'])) {
-                $this->addError("items.$index.product_id", 'Product is required.');
+                $this->addError("items.$index.product_id", __('messages.items.product_required'));
                 return;
             }
             if ($item['quantity'] <= 0 || $item['unit_cost'] < 0) {
-                $this->addError("items.$index.quantity", 'Quantity and cost must be positive.');
+                $this->addError("items.$index.quantity", __('messages.items.quantity_cost_positive'));
                 return;
             }
             $totalAmount += $item['quantity'] * $item['unit_cost'];
@@ -120,7 +120,7 @@ class PurchaseForm extends Component
             }
         }
 
-        session()->flash('message', $this->purchaseId ? 'Purchase updated!' : 'Purchase created!');
+        session()->flash('message', $this->purchaseId ? __('messages.purchase.updated') : __('messages.purchase.created'));
         return redirect()->route('purchases.index');
     }
 

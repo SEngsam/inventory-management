@@ -68,7 +68,7 @@ class ManageInvoiceSettings extends Component
         $this->validate();
 
         if (!str_contains($this->format, '{000000}') && !preg_match('/\{0+\}/', $this->format)) {
-            $this->addError('format', 'Format must include a zero-padding placeholder like {000000}.');
+            $this->addError('format', __('messages.invoice_settings.format_placeholder'));
             return;
         }
 
@@ -90,7 +90,7 @@ class ManageInvoiceSettings extends Component
             'invoice.print.template' => $this->template,
         ]);
 
-        session()->flash('message', 'Invoice settings saved.');
+        session()->flash('message', __('messages.invoice_settings.saved'));
         $this->dispatch('saved');
     }
 

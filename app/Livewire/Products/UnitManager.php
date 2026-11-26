@@ -66,8 +66,8 @@ class UnitManager extends Component
         session()->flash(
             'message',
             $isUpdating
-                ? 'Unit updated successfully.'
-                : 'Unit created successfully.'
+                ? __('messages.unit.updated')
+                : __('messages.unit.created')
         );
     }
 
@@ -80,7 +80,7 @@ class UnitManager extends Component
             $this->selectedUnits = [];
             $this->loadUnits();
 
-            session()->flash('message', 'Selected units deleted successfully.');
+            session()->flash('message', __('messages.unit.bulk_deleted'));
         }
     }
 

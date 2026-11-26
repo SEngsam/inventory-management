@@ -53,7 +53,7 @@ class ProductList extends Component
         $this->selectAll = false;
         $this->resetPage();
 
-        session()->flash('message', 'Selected products deleted successfully.');
+        session()->flash('message', __('messages.product.bulk_deleted'));
     }
 
     public function render()

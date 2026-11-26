@@ -11,7 +11,7 @@ class ManageSettings extends Component
 
     public function mount()
     {
-        $this->system_name = Setting::get('system_name', 'Inventory Managment System');
+        $this->system_name = Setting::get('system_name', config('app.name'));
         $this->system_language = Setting::get('system_language', 'ar');
         $this->logo_url = Setting::get('logo_url', '');
     }
@@ -22,7 +22,7 @@ class ManageSettings extends Component
         Setting::set('system_language', $this->system_language);
         Setting::set('logo_url', $this->logo_url);
 
-        session()->flash('message', 'تم حفظ الإعدادات بنجاح 🛠️');
+        session()->flash('message', __('messages.settings.saved'));
     }
 
     public function render()

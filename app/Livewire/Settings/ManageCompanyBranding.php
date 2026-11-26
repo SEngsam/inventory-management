@@ -79,7 +79,7 @@ class ManageCompanyBranding extends Component
             $this->reset('logo');
         }
 
-        session()->flash('message', 'Company & branding saved.');
+        session()->flash('message', __('messages.branding.saved'));
         $this->dispatch('saved');  
     }
 
@@ -92,7 +92,7 @@ class ManageCompanyBranding extends Component
         $settings->forget('company.logo');
         $this->current_logo = null;
 
-        session()->flash('message', 'Logo removed.');
+        session()->flash('message', __('messages.branding.logo_removed'));
         $this->dispatch('saved');
     }
 

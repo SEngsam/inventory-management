@@ -55,7 +55,7 @@ class CustomerList extends Component
         if (!empty($this->selectedCustomers)) {
             Customer::whereIn('id', $this->selectedCustomers)->delete();
 
-            session()->flash('message', 'Selected customers deleted!');
+            session()->flash('message', __('messages.customer.bulk_deleted'));
             $this->selectedCustomers = [];
             $this->selectAll = false;
             $this->resetPage();
@@ -68,7 +68,7 @@ class CustomerList extends Component
         $customer = Customer::find($customerId);
         if ($customer) {
             $customer->delete();
-            session()->flash('message', 'Customer deleted!');
+            session()->flash('message', __('messages.customer.deleted'));
         }
 
         $this->resetPage();

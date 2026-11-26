@@ -43,7 +43,7 @@ class SupplierList extends Component
         if (!empty($this->selectedSuppliers)) {
             Supplier::whereIn('id', $this->selectedSuppliers)->delete();
 
-            session()->flash('message', 'Selected suppliers deleted!');
+            session()->flash('message', __('messages.supplier.bulk_deleted'));
             $this->selectedSuppliers = [];
             $this->selectAll = false;
             $this->resetPage();
@@ -56,7 +56,7 @@ class SupplierList extends Component
         $supplier = Supplier::find($supplierId);
         if ($supplier) {
             $supplier->delete();
-            session()->flash('message', 'Supplier deleted!');
+            session()->flash('message', __('messages.supplier.deleted'));
         }
 
         $this->resetPage();

@@ -122,7 +122,7 @@ class UserManager extends Component
         $this->dispatch('hide-user-modal');
         $this->resetForm();
 
-        session()->flash('message', $this->isEdit ? 'User updated successfully.' : 'User created successfully.');
+        session()->flash('message', $this->isEdit ? __('messages.user.updated') : __('messages.user.created'));
     }
 
     public function deleteSelected(): void
@@ -135,7 +135,7 @@ class UserManager extends Component
             $this->selectAll = false;
             $this->resetPage();
 
-            session()->flash('message', 'Selected users deleted successfully.');
+            session()->flash('message', __('messages.user.bulk_deleted'));
         }
     }
 
@@ -145,7 +145,7 @@ class UserManager extends Component
         $user = User::find($id);
         if ($user) {
             $user->delete();
-            session()->flash('message', 'User deleted successfully.');
+            session()->flash('message', __('messages.user.deleted'));
         }
 
         $this->resetPage();

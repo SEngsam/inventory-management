@@ -52,7 +52,7 @@ class SupplierForm extends Component
             ]
         );
 
-        session()->flash('message', $this->supplierId ? 'Supplier updated!' : 'Supplier created!');
+        session()->flash('message', $this->supplierId ? __('messages.supplier.updated') : __('messages.supplier.created'));
 
          $this->dispatch($this->supplierId ? 'supplierUpdated' : 'supplierAdded');
 

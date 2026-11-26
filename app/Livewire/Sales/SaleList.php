@@ -27,7 +27,7 @@ class SaleList extends Component
         $sale->items()->delete();
         $sale->delete();
 
-        session()->flash('success', 'Invoice Successfully Deleted');
+        session()->flash('success', __('messages.sale.deleted'));
         $this->resetPage();
     }
 

@@ -47,7 +47,7 @@ class ReturnList extends Component
         $return->items()->delete();
         $return->delete();
 
-        session()->flash('message', 'Return deleted successfully.');
+        session()->flash('message', __('messages.return.deleted'));
     }
 
     public function render()
