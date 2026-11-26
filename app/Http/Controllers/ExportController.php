@@ -20,7 +20,6 @@ class ExportController extends Controller
 
         return match ($format) {
             'pdf' => $this->exportPdf($type, $model),
-            'excel' => $this->exportExcel($type, $model),
             default => abort(400),
         };
     }
@@ -43,12 +42,5 @@ class ExportController extends Controller
             ->setPaper('a4');
 
         return $pdf->stream("{$type}-{$model->id}.pdf");
-    }
-
-    private function exportExcel(string $type, $model)
-    {
-        return response()->json([
-            'message' => 'Excel export not implemented yet.',
-        ]);
     }
 }
