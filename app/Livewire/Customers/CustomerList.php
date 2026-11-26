@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Customers;
 
-use Livewire\Component;
 use App\Models\Customer;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class CustomerList extends Component
@@ -13,12 +13,12 @@ class CustomerList extends Component
     protected $paginationTheme = 'bootstrap';
 
     public $search = '';
+
     public $selectedCustomers = [];
+
     public $selectAll = false;
 
-    public function mount(): void
-    {
-    }
+    public function mount(): void {}
 
     public function updatingSearch(): void
     {
@@ -31,8 +31,8 @@ class CustomerList extends Component
     {
         return Customer::query()
             ->where(function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('company', 'like', '%' . $this->search . '%');
+                $q->where('name', 'like', '%'.$this->search.'%')
+                    ->orWhere('company', 'like', '%'.$this->search.'%');
             })
             ->latest();
     }
@@ -52,7 +52,7 @@ class CustomerList extends Component
     public function deleteCustomer(): void
     {
 
-        if (!empty($this->selectedCustomers)) {
+        if (! empty($this->selectedCustomers)) {
             Customer::whereIn('id', $this->selectedCustomers)->delete();
 
             session()->flash('message', __('messages.customer.bulk_deleted'));

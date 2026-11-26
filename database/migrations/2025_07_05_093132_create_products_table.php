@@ -16,21 +16,21 @@ return new class extends Migration
             $table->text('description')->nullable();
 
             $table->decimal('price', 10, 2)->unsigned()->default(0);
-            $table->decimal('tax_value', 8, 2)->unsigned()->nullable(); 
+            $table->decimal('tax_value', 8, 2)->unsigned()->nullable();
             $table->enum('tax_type', ['percent', 'fixed'])->default('percent');
 
             $table->unsignedInteger('stock_quantity')->default(0);
-            $table->unsignedInteger('threshold_stock')->default(5);  
+            $table->unsignedInteger('threshold_stock')->default(5);
 
-            $table->string('image')->nullable(); 
+            $table->string('image')->nullable();
 
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
 
             $table->boolean('has_warranty')->default(false);
-            $table->unsignedInteger('warranty_period')->nullable();  
+            $table->unsignedInteger('warranty_period')->nullable();
 
-            $table->boolean('has_imei')->default(false);  
+            $table->boolean('has_imei')->default(false);
 
             // Timestamps
             $table->timestamps();

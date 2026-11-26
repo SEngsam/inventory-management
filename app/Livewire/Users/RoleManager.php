@@ -2,12 +2,12 @@
 
 namespace App\Livewire\Users;
 
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class RoleManager extends Component
 {
@@ -18,14 +18,14 @@ class RoleManager extends Component
     public $search = '';
 
     public $isEdit = false;
+
     public $role_id;
+
     public $name;
 
     public $selectedPermissions = [];
 
-    public function mount(): void
-    {
-    }
+    public function mount(): void {}
 
     public function updatingSearch(): void
     {
@@ -37,7 +37,7 @@ class RoleManager extends Component
         return Role::query()
             ->where('guard_name', 'web')
             ->when($this->search, function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%');
+                $q->where('name', 'like', '%'.$this->search.'%');
             })
             ->orderBy('name');
     }
@@ -61,6 +61,7 @@ class RoleManager extends Component
         }
 
         ksort($groups);
+
         return $groups;
     }
 
@@ -124,6 +125,7 @@ class RoleManager extends Component
         if ($role) {
             if (strtolower($role->name) === 'admin') {
                 session()->flash('message', __('messages.role.admin_protected'));
+
                 return;
             }
 

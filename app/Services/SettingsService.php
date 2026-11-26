@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Setting;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class SettingsService
 {
@@ -12,7 +12,7 @@ class SettingsService
     {
         $all = $this->all();
 
-        if (!$all->has($key)) {
+        if (! $all->has($key)) {
             return $default;
         }
 
@@ -78,10 +78,14 @@ class SettingsService
 
     private function decodeIfJson(?string $value): mixed
     {
-        if ($value === null) return null;
+        if ($value === null) {
+            return null;
+        }
 
         $trim = ltrim($value);
-        if ($trim === '' ) return $value;
+        if ($trim === '') {
+            return $value;
+        }
 
         // decode arrays/objects stored as json
         if (str_starts_with($trim, '{') || str_starts_with($trim, '[')) {

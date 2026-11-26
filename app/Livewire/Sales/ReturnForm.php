@@ -3,8 +3,8 @@
 namespace App\Livewire\Sales;
 
 use App\Livewire\BaseComponent;
-use App\Models\Sale;
 use App\Models\Product;
+use App\Models\Sale;
 use App\Models\SaleReturn;
 use App\Models\SaleReturnItem;
 use Illuminate\Support\Str;
@@ -14,10 +14,15 @@ class ReturnForm extends BaseComponent
     protected string $module = 'sale-returns';
 
     public $sales;
+
     public $sale_id;
+
     public $return_date;
+
     public $reference_no;
+
     public $note;
+
     public $items = [];
 
     public function mount()
@@ -25,7 +30,7 @@ class ReturnForm extends BaseComponent
         $this->authorizeAction('create');
 
         $this->sales = Sale::with('items.product')->get();
-        $this->reference_no = 'RET-' . strtoupper(Str::random(6));
+        $this->reference_no = 'RET-'.strtoupper(Str::random(6));
         $this->return_date = now()->format('Y-m-d');
     }
 
@@ -64,8 +69,9 @@ class ReturnForm extends BaseComponent
         ]);
 
         $sale = Sale::with('items')->find($this->sale_id);
-        if (!$sale) {
+        if (! $sale) {
             session()->flash('error', __('messages.return.sale_not_found'));
+
             return;
         }
 
@@ -80,11 +86,13 @@ class ReturnForm extends BaseComponent
             $max = (int) ($soldQtyByProduct[$pid] ?? 0);
             if ($max <= 0) {
                 session()->flash('error', __('messages.return.invalid_items'));
+
                 return;
             }
 
             if ($qty > $max) {
                 session()->flash('error', __('messages.return.exceeds_sold'));
+
                 return;
             }
         }
@@ -123,6 +131,7 @@ class ReturnForm extends BaseComponent
         }
 
         session()->flash('message', __('messages.return.saved'));
+
         return redirect()->route('sale-returns.index');
     }
 

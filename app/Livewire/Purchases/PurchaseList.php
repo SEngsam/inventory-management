@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Purchases;
 
-use Livewire\Component;
 use App\Models\Purchase;
+use Livewire\Component;
 
 class PurchaseList extends Component
 {

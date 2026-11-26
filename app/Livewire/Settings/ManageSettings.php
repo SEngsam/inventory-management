@@ -7,7 +7,11 @@ use Livewire\Component;
 
 class ManageSettings extends Component
 {
-    public $system_name, $system_language, $logo_url;
+    public $system_name;
+
+    public $system_language;
+
+    public $logo_url;
 
     public function mount()
     {

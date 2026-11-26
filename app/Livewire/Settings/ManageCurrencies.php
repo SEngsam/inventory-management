@@ -8,10 +8,20 @@ use Livewire\Component;
 class ManageCurrencies extends Component
 {
     public $currencies;
+
     public $currency_id;
-    public $name, $symbol, $rate;
+
+    public $name;
+
+    public $symbol;
+
+    public $rate;
+
     public $is_active = true;
-    public $selectedCurrency = [], $selectAll = false;
+
+    public $selectedCurrency = [];
+
+    public $selectAll = false;
 
     protected $rules = [
         'name' => 'required|string',
@@ -22,6 +32,7 @@ class ManageCurrencies extends Component
     public function render()
     {
         $this->currencies = Currency::orderByDesc('is_default')->get();
+
         return view('livewire.settings.manage-currencies');
     }
 
@@ -88,5 +99,3 @@ class ManageCurrencies extends Component
         $this->is_active = true;
     }
 }
-
-

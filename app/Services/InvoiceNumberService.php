@@ -18,12 +18,12 @@ class InvoiceNumberService
         return DB::transaction(function () use ($date) {
 
             $format = $this->ensureAndLockGet('invoice.format', 'INV-{YYYY}-{000000}');
-            $reset  = $this->ensureAndLockGet('invoice.numbering.reset', 'yearly');
-            $next   = (int) $this->ensureAndLockGet('invoice.next_number', '1');
+            $reset = $this->ensureAndLockGet('invoice.numbering.reset', 'yearly');
+            $next = (int) $this->ensureAndLockGet('invoice.next_number', '1');
             $seqYear = (int) $this->ensureAndLockGet('invoice.sequence_year', (string) $date->year);
 
-            if ($reset === 'yearly' && $seqYear !== (int)$date->year) {
-                $seqYear = (int)$date->year;
+            if ($reset === 'yearly' && $seqYear !== (int) $date->year) {
+                $seqYear = (int) $date->year;
                 $next = 1;
 
                 $this->lockedUpdate('invoice.sequence_year', (string) $seqYear);
@@ -39,7 +39,6 @@ class InvoiceNumberService
             return $invoiceNo;
         }, 3);
     }
-
 
     private function ensureAndLockGet(string $key, string $default): string
     {
@@ -79,12 +78,13 @@ class InvoiceNumberService
         $out = $format;
 
         $out = str_replace('{YYYY}', $date->format('Y'), $out);
-        $out = str_replace('{YY}',   $date->format('y'), $out);
-        $out = str_replace('{MM}',   $date->format('m'), $out);
-        $out = str_replace('{DD}',   $date->format('d'), $out);
+        $out = str_replace('{YY}', $date->format('y'), $out);
+        $out = str_replace('{MM}', $date->format('m'), $out);
+        $out = str_replace('{DD}', $date->format('d'), $out);
 
         $out = preg_replace_callback('/\{(0+)\}/', function ($m) use ($sequence) {
             $len = strlen($m[1]);
+
             return str_pad((string) $sequence, $len, '0', STR_PAD_LEFT);
         }, $out);
 

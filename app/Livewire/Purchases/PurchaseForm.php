@@ -2,25 +2,33 @@
 
 namespace App\Livewire\Purchases;
 
-use Livewire\Component;
-use App\Models\Supplier;
 use App\Models\Product;
 use App\Models\Purchase;
-use Illuminate\Support\Str;
+use App\Models\Supplier;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use Livewire\Component;
 
 class PurchaseForm extends Component
 {
     public $purchase;
+
     public $purchaseId;
+
     public $supplier_id;
+
     public $purchase_date;
+
     public $reference_no;
+
     public $status = 'received';
+
     public $notes;
 
     public $suppliers;
+
     public $products;
+
     public $items = [];
 
     public function mount($id = null)
@@ -42,12 +50,11 @@ class PurchaseForm extends Component
             })->toArray();
         } else {
             // Creating a new purchase
-            $this->reference_no = 'REF-' . strtoupper(Str::random(6));
+            $this->reference_no = 'REF-'.strtoupper(Str::random(6));
             $this->purchase_date = Carbon::now()->format('Y-m-d');
             $this->items[] = ['product_id' => '', 'quantity' => 1, 'unit_cost' => 0];
         }
     }
-
 
     public function addItem()
     {
@@ -70,6 +77,7 @@ class PurchaseForm extends Component
 
         if (empty($this->items)) {
             $this->addError('items', __('messages.items.required'));
+
             return;
         }
 
@@ -78,10 +86,12 @@ class PurchaseForm extends Component
         foreach ($this->items as $index => $item) {
             if (empty($item['product_id'])) {
                 $this->addError("items.$index.product_id", __('messages.items.product_required'));
+
                 return;
             }
             if ($item['quantity'] <= 0 || $item['unit_cost'] < 0) {
                 $this->addError("items.$index.quantity", __('messages.items.quantity_cost_positive'));
+
                 return;
             }
             $totalAmount += $item['quantity'] * $item['unit_cost'];
@@ -121,6 +131,7 @@ class PurchaseForm extends Component
         }
 
         session()->flash('message', $this->purchaseId ? __('messages.purchase.updated') : __('messages.purchase.created'));
+
         return redirect()->route('purchases.index');
     }
 

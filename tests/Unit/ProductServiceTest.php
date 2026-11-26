@@ -3,19 +3,18 @@
 namespace Tests\Unit;
 
 use App\Models\Category;
-use Illuminate\Support\Str;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Services\ProductService;
 use App\Models\Product;
+use App\Services\ProductService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Tests\TestCase;
 
 class ProductServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     protected ProductService $productService;
-
 
     protected function setUp(): void
     {
@@ -28,7 +27,7 @@ class ProductServiceTest extends TestCase
     {
         $category = Category::factory()->create();
 
-        $product = $this->productService->create('iPhone', 799,$category->id,'SKU-' . Str::random(6));
+        $product = $this->productService->create('iPhone', 799, $category->id, 'SKU-'.Str::random(6));
 
         $this->assertInstanceOf(Product::class, $product);
         $this->assertEquals('iPhone', $product->name);
@@ -43,7 +42,7 @@ class ProductServiceTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Product name is required');
 
-        $this->productService->create('', 100,$category->id,'SKU-' . Str::random(6));
+        $this->productService->create('', 100, $category->id, 'SKU-'.Str::random(6));
     }
 
     /** @test */
@@ -54,7 +53,7 @@ class ProductServiceTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Product price must be greater than 1');
 
-        $this->productService->create('Headphones', 1,$category->id,'SKU-' . Str::random(6));
+        $this->productService->create('Headphones', 1, $category->id, 'SKU-'.Str::random(6));
     }
 
     /** @test */
@@ -67,6 +66,6 @@ class ProductServiceTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Product name must be unique');
 
-        $this->productService->create('Speaker', 55,$category->id,'SKU-' . Str::random(6));
+        $this->productService->create('Speaker', 55, $category->id, 'SKU-'.Str::random(6));
     }
 }

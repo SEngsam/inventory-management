@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Sales;
 
-use App\Models\SaleReturn;
 use App\Models\Customer;
+use App\Models\SaleReturn;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -18,6 +18,7 @@ class ReturnList extends Component
     ];
 
     public $selectedReturns = [];
+
     public $selectAll = false;
 
     protected $paginationTheme = 'bootstrap';
@@ -63,7 +64,7 @@ class ReturnList extends Component
         }
 
         if ($this->filter['customer_id']) {
-            $query->whereHas('sale', fn($q) => $q->where('customer_id', $this->filter['customer_id']));
+            $query->whereHas('sale', fn ($q) => $q->where('customer_id', $this->filter['customer_id']));
         }
 
         return view('livewire.sales.return-list', [

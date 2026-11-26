@@ -13,14 +13,14 @@ class AccessControl
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
- public function handle(Request $request, Closure $next, ...$except): Response
+    public function handle(Request $request, Closure $next, ...$except): Response
     {
         $user = $request->user();
 
         $route = $request->route();
         $routeName = $route?->getName();
 
-        if (!$routeName) {
+        if (! $routeName) {
             abort(403);
         }
 

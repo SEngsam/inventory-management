@@ -8,10 +8,15 @@ use Livewire\Component;
 class CategoryManager extends Component
 {
     public $categories;
+
     public $category_id;
+
     public $isEdit = false;
+
     public $name;
+
     public $code;
+
     public $selectedCategories = [];
 
     public function mount()
@@ -31,7 +36,7 @@ class CategoryManager extends Component
 
         $this->validate([
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:20|unique:categories,code,' . $this->category_id,
+            'code' => 'required|string|max:20|unique:categories,code,'.$this->category_id,
         ]);
 
         Category::updateOrCreate(

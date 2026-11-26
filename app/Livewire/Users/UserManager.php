@@ -3,11 +3,11 @@
 namespace App\Livewire\Users;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Permission\Models\Role;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Hash;
 
 class UserManager extends Component
 {
@@ -16,15 +16,21 @@ class UserManager extends Component
     protected $paginationTheme = 'bootstrap';
 
     public $search = '';
+
     public $selectedUsers = [];
+
     public $selectAll = false;
 
     public $isEdit = false;
+
     public $user_id;
 
     public $name;
+
     public $email;
+
     public $password;
+
     public $role;
 
     public $roles = [];
@@ -45,8 +51,8 @@ class UserManager extends Component
     {
         return User::query()
             ->where(function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('email', 'like', '%' . $this->search . '%');
+                $q->where('name', 'like', '%'.$this->search.'%')
+                    ->orWhere('email', 'like', '%'.$this->search.'%');
             })
             ->latest();
     }
@@ -111,7 +117,7 @@ class UserManager extends Component
             'email' => $this->email,
         ];
 
-        if (!empty($this->password)) {
+        if (! empty($this->password)) {
             $data['password'] = Hash::make($this->password);
         }
 
@@ -128,7 +134,7 @@ class UserManager extends Component
     public function deleteSelected(): void
     {
 
-        if (!empty($this->selectedUsers)) {
+        if (! empty($this->selectedUsers)) {
             User::whereIn('id', $this->selectedUsers)->delete();
 
             $this->selectedUsers = [];
@@ -159,6 +165,7 @@ class UserManager extends Component
     public function render()
     {
         $users = $this->usersQuery()->paginate(10);
+
         return view('livewire.users.user-manager', compact('users'));
     }
 }

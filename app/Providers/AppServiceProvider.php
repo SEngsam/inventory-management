@@ -14,12 +14,11 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(SettingsService::class, function () {
-            return new SettingsService();
+            return new SettingsService;
         });
         $this->app->singleton(InvoiceNumberService::class);
     }
 
- 
     public function boot(): void
     {
         //

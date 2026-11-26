@@ -7,6 +7,7 @@ use Livewire\Component;
 abstract class BaseComponent extends Component
 {
     protected string $module = '';
+
     protected ?string $viewPermission = null;
 
     protected function perm(string $action): string
@@ -14,9 +15,7 @@ abstract class BaseComponent extends Component
         return "{$this->module}.{$action}";
     }
 
-    protected function authorizePermission(string $permission): void
-    {
-    }
+    protected function authorizePermission(string $permission): void {}
 
     protected function authorizeView(): void
     {

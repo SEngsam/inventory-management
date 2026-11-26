@@ -2,22 +2,29 @@
 
 namespace App\Livewire\Products;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
 use App\Models\Brand;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class BrandManager extends Component
 {
     use WithFileUploads;
 
     public $brands;
+
     public $brand_id;
+
     public $name;
+
     public $description;
+
     public $image;
+
     public $newImage;
+
     public $isEdit = false;
+
     public $selectedBrands = [];
 
     public function mount()
