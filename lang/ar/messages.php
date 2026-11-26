@@ -12,15 +12,11 @@ return [
     */
 
     'stock' => [
-        'insufficient' => 'المخزون غير كافٍ لمنتج واحد أو أكثر.',
-        'insufficient_for' => 'المخزون غير كافٍ للمنتج :product.',
         'insufficient_detail' => 'المخزون غير كافٍ للمنتج :product. المتوفر: :available، المطلوب: :requested.',
     ],
 
     'items' => [
         'required' => 'يجب إضافة عنصر واحد على الأقل.',
-        'product_required' => 'المنتج مطلوب.',
-        'quantity_cost_positive' => 'يجب أن تكون الكمية والتكلفة قيمًا موجبة.',
         'select_product' => 'يرجى اختيار منتج واحد على الأقل.',
         'products_not_found' => 'لم يتم العثور على منتج أو أكثر من المنتجات المختارة.',
     ],
@@ -34,9 +30,7 @@ return [
     'return' => [
         'saved' => 'تم حفظ المرتجع بنجاح.',
         'deleted' => 'تم حذف المرتجع بنجاح.',
-        'sale_not_found' => 'لم يتم العثور على عملية البيع المحددة.',
         'invalid_items' => 'عناصر المرتجع غير صالحة.',
-        'exceeds_sold' => 'لا يمكن أن تتجاوز كمية المرتجع الكمية المباعة.',
         'sale_not_completed' => 'يمكن إرجاع عمليات البيع المكتملة فقط.',
         'exceeds_returnable' => 'يمكنك إرجاع :max كحد أقصى من :product.',
     ],
