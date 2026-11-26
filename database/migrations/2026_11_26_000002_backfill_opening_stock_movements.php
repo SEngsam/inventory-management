@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
+    private const NOTE = 'Opening balance recorded when the stock ledger was introduced';
+
     public function up(): void
     {
         $now = now();
@@ -18,7 +20,7 @@ return new class extends Migration
                     'type' => 'opening',
                     'quantity' => $product->stock_quantity,
                     'balance_after' => $product->stock_quantity,
-                    'note' => 'Opening balance recorded when the stock ledger was introduced',
+                    'note' => self::NOTE,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ])->all());
@@ -27,6 +29,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::table('stock_movements')->where('type', 'opening')->delete();
+        DB::table('stock_movements')->where('type', 'opening')->where('note', self::NOTE)->delete();
     }
 };
