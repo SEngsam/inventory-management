@@ -9,6 +9,12 @@ class Purchase extends Model
 {
     use HasFactory;
 
+    public const STATUS_RECEIVED = 'received';
+
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_ORDERED = 'ordered';
+
     protected $fillable = [
         'reference_no',
         'supplier_id',
