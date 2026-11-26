@@ -9,7 +9,7 @@ class TranslationsTest extends TestCase
 {
     public function test_arabic_and_english_group_files_define_the_same_keys(): void
     {
-        foreach (['auth', 'messages', 'pagination', 'passwords', 'validation'] as $group) {
+        foreach (['auth', 'messages', 'pagination', 'passwords', 'stock', 'validation'] as $group) {
             $en = array_keys(Arr::dot(require lang_path("en/{$group}.php")));
             $ar = array_keys(Arr::dot(require lang_path("ar/{$group}.php")));
 

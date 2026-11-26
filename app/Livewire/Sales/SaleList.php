@@ -3,6 +3,8 @@
 namespace App\Livewire\Sales;
 
 use App\Models\Sale;
+use App\Services\SaleService;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,22 +14,17 @@ class SaleList extends Component
 
     protected $paginationTheme = 'bootstrap';
 
-    public function delete($id)
+    public function delete(SaleService $sales, $id)
     {
-        $sale = Sale::findOrFail($id);
+        try {
+            $sales->delete(Sale::findOrFail($id));
+        } catch (ValidationException $e) {
+            session()->flash('error', collect($e->errors())->flatten()->first());
 
-        if ($sale->status === 'completed') {
-            foreach ($sale->items as $item) {
-                $product = $item->product;
-                $product->stock_quantity += $item->quantity;
-                $product->save();
-            }
+            return;
         }
 
-        $sale->items()->delete();
-        $sale->delete();
-
-        session()->flash('success', __('messages.sale.deleted'));
+        session()->flash('message', __('messages.sale.deleted'));
         $this->resetPage();
     }
 

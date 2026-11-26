@@ -15,6 +15,7 @@ class ProductFactory extends Factory
     {
         return [
             'name' => $this->faker->word(),
+            'type' => 'standard',
             'sku' => 'SKU-'.Str::random(length: 6),
             'price' => $this->faker->randomFloat(2, 1, 100),
             'stock_quantity' => $this->faker->numberBetween(0, 50),

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\StockMovementType;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Illuminate\Support\Facades\Auth;
@@ -11,7 +12,8 @@ use Illuminate\Validation\ValidationException;
 class InvoiceService
 {
     public function __construct(
-        private readonly InvoiceNumberService $numberService
+        private readonly InvoiceNumberService $numberService,
+        private readonly StockService $stock,
     ) {}
 
     /**
@@ -27,6 +29,11 @@ class InvoiceService
                     'items' => __('messages.invoice.empty'),
                 ]);
             }
+
+            // Hold the product locks for the whole transaction so the stock
+            // check below and the deduction see the same quantities.
+            $this->stock->lock(array_column($lines, 'product_id'));
+            $quantities = [];
 
             $subtotal = 0.0;
             $taxTotal = 0.0;
@@ -73,16 +80,7 @@ class InvoiceService
                 $productId = (int) $l['product_id'];
                 $qty = (int) $l['quantity'];
 
-                $updated = DB::table('products')
-                    ->where('id', $productId)
-                    ->where('stock_quantity', '>=', $qty)
-                    ->decrement('stock_quantity', $qty);
-
-                if ($updated === 0) {
-                    throw ValidationException::withMessages([
-                        'items' => __('messages.stock.insufficient'),
-                    ]);
-                }
+                $quantities[$productId] = ($quantities[$productId] ?? 0) + $qty;
 
                 InvoiceItem::create([
                     'invoice_id' => $invoice->id,
@@ -101,8 +99,21 @@ class InvoiceService
                 ]);
             }
 
+            $this->stock->remove(StockMovementType::Sale, $quantities, $invoice);
+
             return $invoice;
 
         }, 3);
+    }
+
+    /**
+     * Delete an invoice and put its goods back into stock.
+     */
+    public function delete(Invoice $invoice): void
+    {
+        DB::transaction(function () use ($invoice) {
+            $this->stock->reverse($invoice, 'Invoice deleted');
+            $invoice->delete();
+        });
     }
 }

@@ -5,8 +5,8 @@ namespace App\Livewire\Sales;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Services\SaleService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -100,50 +100,17 @@ class SaleForm extends Component
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        DB::transaction(function () {
-            $sale = Sale::updateOrCreate(
-                ['id' => $this->saleId],
-                [
-                    'reference_no' => $this->reference_no,
-                    'sale_date' => $this->sale_date,
-                    'status' => $this->status,
-                    'note' => $this->note,
-                    'customer_id' => $this->customer_id,
-                ]
-            );
+        $sale = $this->saleId ? Sale::findOrFail($this->saleId) : null;
 
-            if ($this->saleId) {
-                // Delete old sale items if editing
-                $sale->items()->delete();
-            }
+        app(SaleService::class)->save([
+            'reference_no' => $this->reference_no,
+            'sale_date' => $this->sale_date,
+            'status' => $this->status,
+            'note' => $this->note,
+            'customer_id' => $this->customer_id ?: null,
+        ], $this->items, $sale);
 
-            foreach ($this->items as $item) {
-                $product = Product::findOrFail($item['product_id']);
-
-                if ($this->status === 'completed') {
-                    // Check stock availability before deducting
-                    if ($product->stock_quantity < $item['quantity']) {
-                        throw new \Exception(__('messages.stock.insufficient_for', ['product' => $product->name]));
-                    }
-
-                    // Deduct quantity from product stock
-                    $product->stock_quantity -= $item['quantity'];
-                    $product->save();
-                }
-
-                // Calculate total for the sale item
-                $total = $item['quantity'] * $item['unit_price'];
-
-                $sale->items()->create([
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'total' => $total,  // Important to include total to avoid SQL error
-                ]);
-            }
-        });
-
-        session()->flash('success', __('messages.sale.saved'));
+        session()->flash('message', __('messages.sale.saved'));
 
         return redirect()->route('sales.index');
     }

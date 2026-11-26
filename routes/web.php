@@ -32,6 +32,7 @@ use App\Livewire\Settings\ManageCompanyBranding;
 // Customers
 use App\Livewire\Settings\ManageCurrencies;
 use App\Livewire\Settings\ManageInvoiceSettings;
+use App\Livewire\Stock\StockMovementList;
 // Invoices
 use App\Livewire\Suppliers\SupplierForm;
 use App\Livewire\Suppliers\SupplierList;
@@ -111,6 +112,9 @@ Route::middleware(['auth', 'access.control'])->group(function () {
             ->name('brands');
     });
 
+    Route::get('/stock-movements', StockMovementList::class)
+        ->name('stock-movements.index');
+
     /*
     |--------------------------------------------------------------------------
     | Purchases
@@ -163,9 +167,6 @@ Route::middleware(['auth', 'access.control'])->group(function () {
 
         Route::get('/create', ReturnForm::class)
             ->name('create');
-
-        Route::get('/edit/{return}', ReturnForm::class)
-            ->name('edit');
 
         Route::get('/{return}', ReturnShow::class)
             ->name('show');

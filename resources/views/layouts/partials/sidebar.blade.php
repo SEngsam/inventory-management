@@ -78,6 +78,13 @@
                     </div>
                 </li>
 
+                <li>
+                    <a href="{{ route('stock-movements.index') }}" class="tp-link">
+                        <i data-feather="database"></i>
+                        <span> {{ __('Stock movements') }} </span>
+                    </a>
+                </li>
+
                 <!-- Management -->
                 <li class="menu-title">Management</li>
 

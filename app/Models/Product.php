@@ -4,11 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
     use HasFactory;
 
+    /**
+     * stock_quantity is deliberately not fillable: it is a cached balance
+     * that only App\Services\StockService may change, together with a
+     * matching row in stock_movements.
+     */
     protected $fillable = [
         'name',
         'sku',
@@ -21,12 +27,19 @@ class Product extends Model
         'price',
         'warranty_period',
         'has_warranty',
-        'stock_quantity',
         'has_imei',
+        'threshold_stock',
         'type',
         'code',
         'unit_id',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'stock_quantity' => 'integer',
+        ];
+    }
 
     public function unit()
     {
@@ -56,8 +69,8 @@ class Product extends Model
             : asset('images/no-image.png');
     }
 
-    public function reduceStock($quantity)
+    public function stockMovements(): HasMany
     {
-        $this->decrement('stock_quantity', $quantity);
+        return $this->hasMany(StockMovement::class);
     }
 }

@@ -5,9 +5,7 @@
         </div>
     </div>
 
-    @if (session()->has('message'))
-        <div class="alert alert-success">{{ session('message') }}</div>
-    @endif
+    @include('partials.flash')
 
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">

@@ -12,15 +12,11 @@ return [
     */
 
     'stock' => [
-        'insufficient' => 'Insufficient stock for one or more products.',
-        'insufficient_for' => 'Insufficient stock for :product.',
         'insufficient_detail' => 'Insufficient stock for :product. Available: :available, requested: :requested.',
     ],
 
     'items' => [
         'required' => 'At least one item is required.',
-        'product_required' => 'Product is required.',
-        'quantity_cost_positive' => 'Quantity and cost must be positive.',
         'select_product' => 'Please select at least one product.',
         'products_not_found' => 'One or more selected products were not found.',
     ],
@@ -28,14 +24,15 @@ return [
     'sale' => [
         'saved' => 'Sale saved successfully.',
         'deleted' => 'Sale deleted successfully.',
+        'has_returns' => 'This sale has returns, so it can no longer be changed or deleted.',
     ],
 
     'return' => [
         'saved' => 'Return saved successfully.',
         'deleted' => 'Return deleted successfully.',
-        'sale_not_found' => 'The selected sale was not found.',
         'invalid_items' => 'Invalid return items.',
-        'exceeds_sold' => 'Return quantity cannot exceed the sold quantity.',
+        'sale_not_completed' => 'Only completed sales can be returned.',
+        'exceeds_returnable' => 'You can return at most :max of :product.',
     ],
 
     'purchase' => [
