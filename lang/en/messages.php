@@ -28,6 +28,7 @@ return [
     'sale' => [
         'saved' => 'Sale saved successfully.',
         'deleted' => 'Sale deleted successfully.',
+        'has_returns' => 'This sale has returns, so it can no longer be changed or deleted.',
     ],
 
     'return' => [
@@ -36,6 +37,8 @@ return [
         'sale_not_found' => 'The selected sale was not found.',
         'invalid_items' => 'Invalid return items.',
         'exceeds_sold' => 'Return quantity cannot exceed the sold quantity.',
+        'sale_not_completed' => 'Only completed sales can be returned.',
+        'exceeds_returnable' => 'You can return at most :max of :product.',
     ],
 
     'purchase' => [

@@ -3,10 +3,8 @@
 namespace App\Livewire\Sales;
 
 use App\Livewire\BaseComponent;
-use App\Models\Product;
 use App\Models\Sale;
-use App\Models\SaleReturn;
-use App\Models\SaleReturnItem;
+use App\Services\SaleReturnService;
 use Illuminate\Support\Str;
 
 class ReturnForm extends BaseComponent
@@ -23,112 +21,76 @@ class ReturnForm extends BaseComponent
 
     public $note;
 
+    /**
+     * One row per product on the selected sale.
+     *
+     * @var list<array{product_id: int, product_name: string, quantity: int, max_quantity: int, unit_price: float}>
+     */
     public $items = [];
 
     public function mount()
     {
         $this->authorizeAction('create');
 
-        $this->sales = Sale::with('items.product')->get();
+        // Only completed sales took stock out, so only they can be returned.
+        $this->sales = Sale::with('customer')
+            ->where('status', Sale::STATUS_COMPLETED)
+            ->latest('sale_date')
+            ->get();
+
         $this->reference_no = 'RET-'.strtoupper(Str::random(6));
         $this->return_date = now()->format('Y-m-d');
     }
 
-    public function updatedSaleId($saleId)
+    public function updatedSaleId($saleId, SaleReturnService $returns)
     {
         $this->authorizeAction('create');
+        $this->items = [];
 
         $sale = Sale::with('items.product')->find($saleId);
 
-        if ($sale) {
-            $this->items = $sale->items->map(function ($item) {
-                return [
-                    'product_id' => $item->product_id,
-                    'product_name' => $item->product->name,
-                    'quantity' => 1,
-                    'max_quantity' => (int) $item->quantity,
-                    'unit_price' => (float) $item->unit_price,
-                ];
-            })->toArray();
-        } else {
-            $this->items = [];
+        if (! $sale) {
+            return;
         }
+
+        $returnable = $returns->returnableQuantities($sale);
+
+        $this->items = $sale->items
+            ->groupBy('product_id')
+            ->map(fn ($rows, $productId) => [
+                'product_id' => (int) $productId,
+                'product_name' => $rows->first()->product->name,
+                'quantity' => 0,
+                'max_quantity' => $returnable[$productId] ?? 0,
+                'unit_price' => round((float) $rows->avg('unit_price'), 2),
+            ])
+            ->filter(fn ($row) => $row['max_quantity'] > 0)
+            ->values()
+            ->all();
     }
 
-    public function save()
+    public function save(SaleReturnService $returns)
     {
         $this->authorizeAction('create');
 
         $this->validate([
             'sale_id' => 'required|exists:sales,id',
+            'reference_no' => 'required|string|unique:sale_returns,reference_no',
             'return_date' => 'required|date',
             'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.product_id' => 'required|integer',
+            'items.*.quantity' => 'required|integer|min:0',
         ]);
 
-        $sale = Sale::with('items')->find($this->sale_id);
-        if (! $sale) {
-            session()->flash('error', __('messages.return.sale_not_found'));
-
-            return;
-        }
-
-        $soldQtyByProduct = $sale->items
-            ->groupBy('product_id')
-            ->map(fn ($rows) => (int) $rows->sum('quantity'));
-
-        foreach ($this->items as $row) {
-            $pid = (int) $row['product_id'];
-            $qty = (int) $row['quantity'];
-
-            $max = (int) ($soldQtyByProduct[$pid] ?? 0);
-            if ($max <= 0) {
-                session()->flash('error', __('messages.return.invalid_items'));
-
-                return;
-            }
-
-            if ($qty > $max) {
-                session()->flash('error', __('messages.return.exceeds_sold'));
-
-                return;
-            }
-        }
-
-        $total = 0;
-        foreach ($this->items as $item) {
-            $total += (int) $item['quantity'] * (float) $item['unit_price'];
-        }
-
-        $return = SaleReturn::create([
-            'sale_id' => $this->sale_id,
-            'customer_id' => $sale->customer_id,
-            'reference_no' => $this->reference_no,
-            'return_date' => $this->return_date,
-            'note' => $this->note,
-            'total' => $total,
-        ]);
-
-        $products = Product::whereIn('id', collect($this->items)->pluck('product_id'))
-            ->get()
-            ->keyBy('id');
-
-        foreach ($this->items as $item) {
-            SaleReturnItem::create([
-                'sale_return_id' => $return->id,
-                'product_id' => $item['product_id'],
-                'quantity' => (int) $item['quantity'],
-                'unit_price' => (float) $item['unit_price'],
-                'total' => (int) $item['quantity'] * (float) $item['unit_price'],
-            ]);
-
-            $pid = (int) $item['product_id'];
-            if (isset($products[$pid])) {
-                $products[$pid]->increment('stock_quantity', (int) $item['quantity']);
-            }
-        }
+        $returns->create(
+            Sale::findOrFail($this->sale_id),
+            [
+                'reference_no' => $this->reference_no,
+                'return_date' => $this->return_date,
+                'note' => $this->note,
+            ],
+            collect($this->items)->pluck('quantity', 'product_id')->all(),
+        );
 
         session()->flash('message', __('messages.return.saved'));
 

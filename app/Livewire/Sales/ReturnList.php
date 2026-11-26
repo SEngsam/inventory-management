@@ -4,6 +4,8 @@ namespace App\Livewire\Sales;
 
 use App\Models\Customer;
 use App\Models\SaleReturn;
+use App\Services\SaleReturnService;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -37,16 +39,15 @@ class ReturnList extends Component
         }
     }
 
-    public function confirmDelete($id)
+    public function confirmDelete(SaleReturnService $returns, $id)
     {
-        $return = SaleReturn::with('items.product')->findOrFail($id);
+        try {
+            $returns->delete(SaleReturn::findOrFail($id));
+        } catch (ValidationException $e) {
+            session()->flash('error', collect($e->errors())->flatten()->first());
 
-        foreach ($return->items as $item) {
-            $item->product?->decrement('stock_quantity', $item->quantity);
+            return;
         }
-
-        $return->items()->delete();
-        $return->delete();
 
         session()->flash('message', __('messages.return.deleted'));
     }

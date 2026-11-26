@@ -13,9 +13,7 @@
     </div>
     <div class="row">
         <div class="col-12">
-            @if (session()->has('message'))
-                <div class="alert alert-success">{{ session('message') }}</div>
-            @endif
+            @include('partials.flash')
 
             <div class="card">
                 <div class="card-header d-flex justify-content-between">

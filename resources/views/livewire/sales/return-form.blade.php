@@ -11,9 +11,7 @@
         </div>
 
         <div class="card-body">
-            @if (session()->has('message'))
-                <div class="alert alert-success">{{ session('message') }}</div>
-            @endif
+            @include('partials.flash')
 
             <form wire:submit.prevent="save">
                 <div class="row mb-3">
@@ -46,6 +44,8 @@
 
                 <h6 class="fw-semibold mb-3">Return Items</h6>
 
+                @error('items') <div class="alert alert-danger">{{ $message }}</div> @enderror
+
                 @foreach ($items as $index => $item)
                     <div class="row mb-3 align-items-end">
                         <div class="col-md-5">
@@ -55,14 +55,14 @@
 
                         <div class="col-md-3">
                             <label>Quantity</label>
-                            <input type="number" min="1" class="form-control" wire:model="items.{{ $index }}.quantity">
-                            @error("items.$index.quantity") <span class="text-danger">{{ $message }}</span> @enderror
+                            <input type="number" min="0" max="{{ $item['max_quantity'] }}" class="form-control" wire:model="items.{{ $index }}.quantity">
+                            <small class="text-muted">{{ __('Up to :max', ['max' => $item['max_quantity']]) }}</small>
+                            @error("items.$index.quantity") <span class="text-danger d-block">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="col-md-3">
                             <label>Unit Price</label>
-                            <input type="number" step="0.01" class="form-control" wire:model="items.{{ $index }}.unit_price">
-                            @error("items.$index.unit_price") <span class="text-danger">{{ $message }}</span> @enderror
+                            <input type="text" class="form-control" value="{{ number_format($item['unit_price'], 2) }}" readonly>
                         </div>
                     </div>
                 @endforeach
