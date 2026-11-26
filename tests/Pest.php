@@ -3,6 +3,7 @@
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,6 +13,10 @@ pest()->extend(TestCase::class)
 
 pest()->extend(TestCase::class)
     ->in('Unit');
+
+pest()->extend(TestCase::class)
+    ->use(DatabaseTruncation::class)
+    ->in('Concurrency');
 
 expect()->extend('toHaveStock', function (int $expected) {
     $product = $this->value instanceof Product ? $this->value->fresh() : Product::findOrFail($this->value);
