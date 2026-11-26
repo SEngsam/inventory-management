@@ -90,7 +90,7 @@ class PurchaseStockTest extends TestCase
             ], $purchase);
         } finally {
             $this->assertStock(1, $product);
-            $this->assertSame(5, $purchase->items()->sum('quantity'));
+            $this->assertSame(5, (int) $purchase->items()->sum('quantity'));
         }
     }
 
