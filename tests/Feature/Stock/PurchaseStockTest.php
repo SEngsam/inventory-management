@@ -3,11 +3,13 @@
 namespace Tests\Feature\Stock;
 
 use App\Exceptions\InsufficientStockException;
+use App\Livewire\Purchases\PurchaseForm;
 use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Services\PurchaseService;
 use App\Services\StockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\Feature\Stock\Concerns\InteractsWithStock;
 use Tests\TestCase;
 
@@ -90,5 +92,23 @@ class PurchaseStockTest extends TestCase
             $this->assertStock(1, $product);
             $this->assertSame(5, $purchase->items()->sum('quantity'));
         }
+    }
+
+    public function test_the_edit_page_loads_the_existing_purchase(): void
+    {
+        $product = $this->productWithStock(0);
+        $purchase = $this->purchases->save($this->data(), [
+            ['product_id' => $product->id, 'quantity' => 5, 'unit_cost' => 3],
+        ]);
+
+        Livewire::test(PurchaseForm::class, ['purchaseId' => $purchase->id])
+            ->assertSet('purchaseId', $purchase->id)
+            ->assertSet('reference_no', $purchase->reference_no)
+            ->set('items.0.quantity', 7)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertStock(7, $product);
+        $this->assertSame(1, Purchase::count());
     }
 }

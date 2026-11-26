@@ -164,9 +164,6 @@ Route::middleware(['auth', 'access.control'])->group(function () {
         Route::get('/create', ReturnForm::class)
             ->name('create');
 
-        Route::get('/edit/{return}', ReturnForm::class)
-            ->name('edit');
-
         Route::get('/{return}', ReturnShow::class)
             ->name('show');
     });

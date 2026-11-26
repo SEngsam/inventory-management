@@ -32,13 +32,13 @@ class PurchaseForm extends Component
 
     public $items = [];
 
-    public function mount($id = null)
+    public function mount($purchaseId = null)
     {
         $this->suppliers = Supplier::all();
         $this->products = Product::all();
 
-        if ($id) {
-            $purchase = Purchase::with('items')->findOrFail($id);
+        if ($purchaseId) {
+            $purchase = Purchase::with('items')->findOrFail($purchaseId);
             // Editing an existing purchase
             $this->purchaseId = $purchase->id;
             $this->fill($purchase->only('supplier_id', 'purchase_date', 'reference_no', 'status', 'notes'));
