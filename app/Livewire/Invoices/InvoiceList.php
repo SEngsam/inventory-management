@@ -3,6 +3,9 @@
 namespace App\Livewire\Invoices;
 
 use App\Models\Invoice;
+use App\Services\InvoiceService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -31,11 +34,19 @@ class InvoiceList extends Component
         }
     }
 
-    public function deleteSelected(): void
+    public function deleteSelected(InvoiceService $invoices): void
     {
-
         if (count($this->selectedInvoices) > 0) {
-            Invoice::whereIn('id', $this->selectedInvoices)->delete();
+            try {
+                DB::transaction(function () use ($invoices) {
+                    Invoice::whereIn('id', $this->selectedInvoices)->get()
+                        ->each(fn (Invoice $invoice) => $invoices->delete($invoice));
+                });
+            } catch (ValidationException $e) {
+                session()->flash('error', collect($e->errors())->flatten()->first());
+
+                return;
+            }
 
             $this->selectedInvoices = [];
             $this->selectAll = false;

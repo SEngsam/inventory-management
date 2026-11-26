@@ -90,16 +90,6 @@ class CreateInvoice extends Component
                 ]);
             }
 
-            if ((int) $product->stock_quantity < (int) $qty) {
-                throw ValidationException::withMessages([
-                    'items' => __('messages.stock.insufficient_detail', [
-                        'product' => $product->name,
-                        'available' => $product->stock_quantity,
-                        'requested' => $qty,
-                    ]),
-                ]);
-            }
-
             $unitPrice = (float) $product->price;
             $lineSub = $unitPrice * $qty;
 
