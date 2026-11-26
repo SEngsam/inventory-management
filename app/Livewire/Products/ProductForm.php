@@ -6,6 +6,8 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Unit;
+use App\Services\StockService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -67,6 +69,7 @@ class ProductForm extends Component
         if ($this->productId) {
             $p = Product::findOrFail($this->productId);
             $this->fill($p->toArray());
+            $this->type = $p->type ?? 'standard';
             $this->image = $p->image;
         }
     }
@@ -94,14 +97,14 @@ class ProductForm extends Component
         ];
     }
 
-    public function save()
+    public function save(StockService $stock)
     {
 
         $this->validate();
 
         $data = $this->only([
             'name', 'sku', 'code', 'type', 'price', 'description',
-            'tax_value', 'tax_type', 'stock_quantity', 'category_id',
+            'tax_value', 'tax_type', 'category_id',
             'brand_id', 'unit_id', 'warranty_period', 'has_warranty',
             'has_imei',
         ]);
@@ -120,7 +123,17 @@ class ProductForm extends Component
             $data['image'] = $this->new_product_image->store('product_images', 'public');
         }
 
-        Product::updateOrCreate(['id' => $this->productId], $data);
+        DB::transaction(function () use ($data, $stock) {
+            $product = Product::updateOrCreate(['id' => $this->productId], $data);
+
+            // Stock never changes through the product itself: a new product
+            // gets an opening movement, an edited one an adjustment.
+            $quantity = (int) ($this->stock_quantity ?? 0);
+
+            $product->wasRecentlyCreated
+                ? $stock->opening($product, $quantity)
+                : $stock->setLevel($product, $quantity, 'Stock level edited on the product form');
+        });
 
         session()->flash('message', $this->productId ? __('messages.product.updated') : __('messages.product.created'));
 

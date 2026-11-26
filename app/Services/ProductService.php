@@ -30,7 +30,6 @@ class ProductService
                 'name' => $name,
                 'price' => $price,
                 'sku' => $sku,
-                'stock_quantity' => 0,
                 'category_id' => $categoryId,
             ]);
         });

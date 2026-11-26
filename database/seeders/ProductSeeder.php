@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Product;
+use App\Services\StockService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -11,9 +12,11 @@ class ProductSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run(StockService $stock): void
     {
-        Product::create([
+        $products = [];
+
+        $products[] = [Product::create([
             'name' => 'iPhone 15 Pro Max',
             'sku' => 'SKU-'.Str::random(6),
             'image' => 'product_images/iphone15.png',
@@ -25,12 +28,11 @@ class ProductSeeder extends Seeder
             'price' => 1299.99,
             'warranty_period' => 365,  // Changed to days (12 months = 365 days)
             'has_warranty' => true,
-            'stock_quantity' => 50,
             'threshold_stock' => 5,  // Adding the low stock threshold
             'has_imei' => true,
-        ]);
+        ]), 50];
 
-        Product::create([
+        $products[] = [Product::create([
             'name' => 'Samsung Galaxy S24 Ultra',
             'sku' => 'SKU-'.Str::random(6),
             'image' => 'product_images/s24ultra.png',
@@ -42,9 +44,12 @@ class ProductSeeder extends Seeder
             'price' => 1199.00,
             'warranty_period' => 730,  // Changed to days (24 months = 730 days)
             'has_warranty' => true,
-            'stock_quantity' => 30,
             'threshold_stock' => 3,  // Adding the low stock threshold
             'has_imei' => true,
-        ]);
+        ]), 30];
+
+        foreach ($products as [$product, $quantity]) {
+            $stock->opening($product, $quantity);
+        }
     }
 }
