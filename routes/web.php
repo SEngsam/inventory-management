@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RoutingController;
 
 // Livewire Components
 use App\Livewire\DashboardPanel;
@@ -239,13 +238,4 @@ Route::middleware(['auth', 'access.control'])->group(function () {
         \App\Http\Controllers\ExportController::class
     )->name('export');
 
-
-    Route::get('{first}/{second}/{third}', [RoutingController::class, 'thirdLevel'])
-        ->name('third');
-
-    Route::get('{first}/{second}', [RoutingController::class, 'secondLevel'])
-        ->name('second');
-
-    Route::get('{any}', [RoutingController::class, 'root'])
-        ->name('any');
 });

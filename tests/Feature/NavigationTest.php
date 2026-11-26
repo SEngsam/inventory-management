@@ -41,4 +41,16 @@ class NavigationTest extends TestCase
             ->assertForbidden()
             ->assertSee(__('Access denied'));
     }
+
+    public function test_unknown_urls_return_the_custom_404_page(): void
+    {
+        $this->artisan('permissions:sync');
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $this->actingAs($admin)
+            ->get('/this-page-does-not-exist')
+            ->assertNotFound()
+            ->assertSee(__('Page not found'));
+    }
 }
