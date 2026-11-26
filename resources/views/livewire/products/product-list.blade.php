@@ -59,6 +59,7 @@
                                     <th>Brand</th>
                                     <th>Category</th>
                                     <th>Price</th>
+                                    <th>{{ __('Stock') }}</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -82,6 +83,12 @@
                                         <td>{{ $product->category->name ?? '-' }}</td>
                                         <td>{{ number_format($product->price ?? $product->product_price, 2) }}</td>
                                         <td>
+                                            <a href="{{ route('stock-movements.index', ['product' => $product->id]) }}" title="{{ __('Stock history') }}"
+                                               class="{{ $product->stock_quantity <= $product->threshold_stock ? 'text-danger fw-semibold' : '' }}">
+                                                {{ $product->stock_quantity }}
+                                            </a>
+                                        </td>
+                                        <td>
                                             <a href="{{ route('products.edit', $product->id) }}">
                                                 <i class="mdi mdi-pencil text-muted fs-18 rounded-2 border p-1 me-1"></i>
                                             </a>
@@ -89,7 +96,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted">No products found.</td>
+                                        <td colspan="8" class="text-center text-muted">No products found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
