@@ -2,8 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Customer;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class NavigationTest extends TestCase
@@ -52,5 +55,28 @@ class NavigationTest extends TestCase
             ->get('/this-page-does-not-exist')
             ->assertNotFound()
             ->assertSee(__('Page not found'));
+    }
+
+    public function test_every_page_without_parameters_renders_for_an_admin(): void
+    {
+        $this->artisan('permissions:sync');
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        $this->actingAs($admin);
+
+        // Give list pages at least one row so per-row links are rendered too.
+        Customer::factory()->create();
+        Supplier::factory()->create();
+
+        $routes = collect(Route::getRoutes()->getRoutesByName())
+            ->filter(fn ($route, $name) => in_array('GET', $route->methods())
+                && in_array('access.control', $route->gatherMiddleware())
+                && $route->parameterNames() === []);
+
+        $this->assertNotEmpty($routes);
+
+        foreach ($routes as $name => $route) {
+            $this->get(route($name))->assertOk();
+        }
     }
 }
