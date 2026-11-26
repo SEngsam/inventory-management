@@ -1,220 +1,191 @@
 <?php
 
-namespace Tests\Feature\Stock;
-
 use App\Enums\StockMovementType;
 use App\Exceptions\InsufficientStockException;
 use App\Livewire\Sales\SaleForm;
 use App\Livewire\Sales\SaleList;
+use App\Models\Product;
 use App\Models\Sale;
 use App\Models\StockMovement;
 use App\Services\SaleReturnService;
 use App\Services\SaleService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
-use Tests\Feature\Stock\Concerns\InteractsWithStock;
-use Tests\TestCase;
 
-class SaleStockTest extends TestCase
+function saleData(string $status = Sale::STATUS_COMPLETED, array $overrides = []): array
 {
-    use InteractsWithStock;
-    use RefreshDatabase;
+    return [
+        'reference_no' => 'SL-'.uniqid(),
+        'sale_date' => now()->toDateString(),
+        'status' => $status,
+        ...$overrides,
+    ];
+}
 
-    private SaleService $sales;
+function saleLine(Product $product, int $quantity, float $price = 5): array
+{
+    return ['product_id' => $product->id, 'quantity' => $quantity, 'unit_price' => $price];
+}
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->sales = app(SaleService::class);
-    }
+function returnOne(Sale $sale, Product $product): void
+{
+    app(SaleReturnService::class)->create($sale, [
+        'reference_no' => 'RET-'.uniqid(),
+        'return_date' => now()->toDateString(),
+    ], [$product->id => 1]);
+}
 
-    private function data(string $status = Sale::STATUS_COMPLETED): array
-    {
-        return [
-            'reference_no' => 'SL-'.uniqid(),
-            'sale_date' => now()->toDateString(),
-            'status' => $status,
-        ];
-    }
+beforeEach(function () {
+    $this->sales = app(SaleService::class);
+});
 
-    public function test_a_completed_sale_deducts_stock_and_references_the_sale(): void
-    {
-        $product = $this->productWithStock(10);
+it('deducts stock for a completed sale and references the sale', function () {
+    $product = Product::factory()->withStock(10)->create();
 
-        $sale = $this->sales->save($this->data(), [
-            ['product_id' => $product->id, 'quantity' => 3, 'unit_price' => 5],
-        ]);
+    $sale = $this->sales->save(saleData(), [saleLine($product, 3)]);
 
-        $this->assertStock(7, $product);
-        $movement = StockMovement::where('reference_type', 'sale')->sole();
-        $this->assertSame(StockMovementType::Sale, $movement->type);
-        $this->assertSame($sale->id, $movement->reference_id);
-    }
+    expect($product)->toHaveStock(7);
+    expect(StockMovement::where('reference_type', 'sale')->sole())
+        ->type->toBe(StockMovementType::Sale)
+        ->quantity->toBe(-3)
+        ->reference_id->toBe($sale->id);
+});
 
-    public function test_repeated_lines_for_the_same_product_are_combined(): void
-    {
-        $product = $this->productWithStock(10);
+it('combines repeated lines for the same product', function () {
+    $product = Product::factory()->withStock(10)->create();
 
-        $this->sales->save($this->data(), [
-            ['product_id' => $product->id, 'quantity' => 2, 'unit_price' => 5],
-            ['product_id' => $product->id, 'quantity' => 3, 'unit_price' => 5],
-        ]);
+    $this->sales->save(saleData(), [saleLine($product, 2), saleLine($product, 3)]);
 
-        $this->assertStock(5, $product);
-    }
+    expect($product)->toHaveStock(5);
+});
 
-    public function test_pending_sales_do_not_touch_stock(): void
-    {
-        $product = $this->productWithStock(10);
+it('does not touch stock for pending sales', function () {
+    $product = Product::factory()->withStock(10)->create();
 
-        $this->sales->save($this->data(Sale::STATUS_PENDING), [
-            ['product_id' => $product->id, 'quantity' => 3, 'unit_price' => 5],
-        ]);
+    $this->sales->save(saleData(Sale::STATUS_PENDING), [saleLine($product, 3)]);
 
-        $this->assertStock(10, $product);
-    }
+    expect($product)->toHaveStock(10);
+});
 
-    public function test_overselling_is_rejected_and_nothing_is_saved(): void
-    {
-        $product = $this->productWithStock(2);
+it('rejects overselling and saves nothing', function () {
+    $product = Product::factory()->withStock(2)->create();
 
-        try {
-            $this->sales->save($this->data(), [
-                ['product_id' => $product->id, 'quantity' => 3, 'unit_price' => 5],
-            ]);
-            $this->fail('Expected the sale to be rejected.');
-        } catch (InsufficientStockException) {
-        }
+    expect(fn () => $this->sales->save(saleData(), [saleLine($product, 3)]))
+        ->toThrow(InsufficientStockException::class);
 
-        $this->assertStock(2, $product);
-        $this->assertSame(0, Sale::count());
-    }
+    expect($product)->toHaveStock(2);
+    expect(Sale::count())->toBe(0);
+});
 
-    public function test_editing_a_completed_sale_only_applies_the_difference(): void
-    {
-        $product = $this->productWithStock(10);
-        $sale = $this->sales->save($this->data(), [
-            ['product_id' => $product->id, 'quantity' => 3, 'unit_price' => 5],
-        ]);
+it('applies only the difference when a completed sale is edited', function () {
+    $product = Product::factory()->withStock(10)->create();
+    $sale = $this->sales->save(saleData(), [saleLine($product, 3)]);
 
-        $this->sales->save([...$this->data(), 'reference_no' => $sale->reference_no], [
-            ['product_id' => $product->id, 'quantity' => 4, 'unit_price' => 5],
-        ], $sale);
+    $this->sales->save(saleData(overrides: ['reference_no' => $sale->reference_no]), [saleLine($product, 4)], $sale);
 
-        $this->assertStock(6, $product);
-    }
+    expect($product)->toHaveStock(6);
+});
 
-    public function test_editing_can_move_stock_between_products(): void
-    {
-        $old = $this->productWithStock(10);
-        $new = $this->productWithStock(10);
-        $sale = $this->sales->save($this->data(), [
-            ['product_id' => $old->id, 'quantity' => 3, 'unit_price' => 5],
-        ]);
+it('moves stock between products when an edit swaps them', function () {
+    $old = Product::factory()->withStock(10)->create();
+    $new = Product::factory()->withStock(10)->create();
+    $sale = $this->sales->save(saleData(), [saleLine($old, 3)]);
 
-        $this->sales->save($this->data(), [
-            ['product_id' => $new->id, 'quantity' => 2, 'unit_price' => 5],
-        ], $sale);
+    $this->sales->save(saleData(), [saleLine($new, 2)], $sale);
 
-        $this->assertStock(10, $old);
-        $this->assertStock(8, $new);
-    }
+    expect($old)->toHaveStock(10);
+    expect($new)->toHaveStock(8);
+});
 
-    public function test_cancelling_a_completed_sale_puts_stock_back(): void
-    {
-        $product = $this->productWithStock(10);
-        $sale = $this->sales->save($this->data(), [
-            ['product_id' => $product->id, 'quantity' => 3, 'unit_price' => 5],
-        ]);
+it('puts stock back when a completed sale is cancelled', function () {
+    $product = Product::factory()->withStock(10)->create();
+    $sale = $this->sales->save(saleData(), [saleLine($product, 3)]);
 
-        $this->sales->save($this->data(Sale::STATUS_CANCELLED), [
-            ['product_id' => $product->id, 'quantity' => 3, 'unit_price' => 5],
-        ], $sale);
+    $this->sales->save(saleData(Sale::STATUS_CANCELLED), [saleLine($product, 3)], $sale);
 
-        $this->assertStock(10, $product);
-        $this->assertSame(Sale::STATUS_CANCELLED, $sale->fresh()->status);
-    }
+    expect($product)->toHaveStock(10);
+    expect($sale->fresh()->status)->toBe(Sale::STATUS_CANCELLED);
+});
 
-    public function test_deleting_a_sale_puts_stock_back(): void
-    {
-        $product = $this->productWithStock(10);
-        $sale = $this->sales->save($this->data(), [
-            ['product_id' => $product->id, 'quantity' => 3, 'unit_price' => 5],
-        ]);
+it('puts stock back when a sale is deleted', function () {
+    $product = Product::factory()->withStock(10)->create();
+    $sale = $this->sales->save(saleData(), [saleLine($product, 3)]);
 
-        $this->sales->delete($sale);
+    $this->sales->delete($sale);
 
-        $this->assertStock(10, $product);
-        $this->assertModelMissing($sale);
-    }
+    expect($product)->toHaveStock(10);
+    $this->assertModelMissing($sale);
+});
 
-    public function test_sales_with_returns_cannot_be_edited_or_deleted(): void
-    {
-        $product = $this->productWithStock(10);
-        $sale = $this->sales->save($this->data(), [
-            ['product_id' => $product->id, 'quantity' => 3, 'unit_price' => 5],
-        ]);
-        app(SaleReturnService::class)->create($sale, [
-            'reference_no' => 'RET-1',
-            'return_date' => now()->toDateString(),
-        ], [$product->id => 1]);
+it('refuses to change a sale that has returns', function (string $change) {
+    $product = Product::factory()->withStock(10)->create();
+    $sale = $this->sales->save(saleData(), [saleLine($product, 3)]);
+    returnOne($sale, $product);
 
-        foreach ([
-            fn () => $this->sales->delete($sale),
-            fn () => $this->sales->save($this->data(), [['product_id' => $product->id, 'quantity' => 1, 'unit_price' => 5]], $sale),
-        ] as $attempt) {
-            try {
-                $attempt();
-                $this->fail('Expected the change to be rejected.');
-            } catch (ValidationException $e) {
-                $this->assertSame(__('messages.sale.has_returns'), $e->errors()['items'][0]);
-            }
-        }
+    $attempt = $change === 'edit'
+        ? fn () => $this->sales->save(saleData(), [saleLine($product, 1)], $sale)
+        : fn () => $this->sales->delete($sale);
 
-        $this->assertStock(8, $product);
-    }
+    expect($attempt)->toThrow(ValidationException::class, __('messages.sale.has_returns'));
 
-    public function test_the_sale_form_reports_overselling_as_a_validation_error(): void
-    {
-        $product = $this->productWithStock(1);
+    expect($product)->toHaveStock(8);
+})->with(['edit', 'delete']);
+
+describe('sale form', function () {
+    it('creates a sale and deducts stock', function () {
+        $product = Product::factory()->withStock(5)->create();
 
         Livewire::test(SaleForm::class)
-            ->set('items', [['product_id' => $product->id, 'quantity' => 2, 'unit_price' => 5]])
-            ->call('save')
-            ->assertHasErrors('items');
-
-        $this->assertStock(1, $product);
-    }
-
-    public function test_the_sale_form_creates_a_sale_and_deducts_stock(): void
-    {
-        $product = $this->productWithStock(5);
-
-        Livewire::test(SaleForm::class)
-            ->set('items', [['product_id' => $product->id, 'quantity' => 2, 'unit_price' => 5]])
+            ->set('items', [saleLine($product, 2)])
             ->call('save')
             ->assertHasNoErrors()
             ->assertRedirect(route('sales.index'));
 
-        $this->assertStock(3, $product);
-    }
+        expect($product)->toHaveStock(3);
+    });
 
-    public function test_the_sale_list_shows_why_a_delete_was_refused(): void
-    {
-        $product = $this->productWithStock(10);
-        $sale = $this->sales->save($this->data(), [
-            ['product_id' => $product->id, 'quantity' => 3, 'unit_price' => 5],
-        ]);
-        app(SaleReturnService::class)->create($sale, [
-            'reference_no' => 'RET-1',
-            'return_date' => now()->toDateString(),
-        ], [$product->id => 1]);
+    it('reports overselling as a validation error', function () {
+        $product = Product::factory()->withStock(1)->create();
 
-        Livewire::test(SaleList::class)
-            ->call('delete', $sale->id)
-            ->assertSee(__('messages.sale.has_returns'));
+        Livewire::test(SaleForm::class)
+            ->set('items', [saleLine($product, 2)])
+            ->call('save')
+            ->assertHasErrors('items');
 
-        $this->assertModelExists($sale);
-    }
-}
+        expect($product)->toHaveStock(1);
+    });
+
+    it('validates its fields', function (string $field, mixed $value, string $error, string $rule) {
+        Livewire::test(SaleForm::class)
+            ->set($field, $value)
+            ->call('save')
+            ->assertHasErrors([$error => $rule]);
+    })->with([
+        'missing date' => ['sale_date', '', 'sale_date', 'required'],
+        'unknown status' => ['status', 'shipped', 'status', 'in'],
+        'no items' => ['items', [], 'items', 'required'],
+        'unknown product' => ['items', [['product_id' => 999, 'quantity' => 1, 'unit_price' => 1]], 'items.0.product_id', 'exists'],
+        'zero quantity' => ['items', [['product_id' => 999, 'quantity' => 0, 'unit_price' => 1]], 'items.0.quantity', 'min'],
+    ]);
+
+    it('loads an existing sale for editing', function () {
+        $product = Product::factory()->withStock(10)->create();
+        $sale = $this->sales->save(saleData(), [saleLine($product, 3, 7.5)]);
+
+        Livewire::test(SaleForm::class, ['id' => $sale->id])
+            ->assertSet('reference_no', $sale->reference_no)
+            ->assertSet('items.0.quantity', 3);
+    });
+});
+
+it('shows why a delete was refused on the sale list', function () {
+    $product = Product::factory()->withStock(10)->create();
+    $sale = $this->sales->save(saleData(), [saleLine($product, 3)]);
+    returnOne($sale, $product);
+
+    Livewire::test(SaleList::class)
+        ->call('delete', $sale->id)
+        ->assertSee(__('messages.sale.has_returns'));
+
+    $this->assertModelExists($sale);
+});
