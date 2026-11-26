@@ -103,10 +103,6 @@ return [
         'logo_removed' => 'Logo removed.',
     ],
 
-    'settings' => [
-        'saved' => 'Settings saved successfully.',
-    ],
-
     'user' => [
         'created' => 'User created successfully.',
         'updated' => 'User updated successfully.',
