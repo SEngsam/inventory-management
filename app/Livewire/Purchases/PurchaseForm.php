@@ -30,7 +30,7 @@ class PurchaseForm extends Component
 
         if ($id) {
             $purchase = Purchase::with('items')->findOrFail($id);
-            // تعديل موجود
+            // Editing an existing purchase
             $this->purchaseId = $purchase->id;
             $this->fill($purchase->only('supplier_id', 'purchase_date', 'reference_no', 'status', 'notes'));
             $this->items = $purchase->items->map(function ($item) {
@@ -41,7 +41,7 @@ class PurchaseForm extends Component
                 ];
             })->toArray();
         } else {
-            // إنشاء جديد
+            // Creating a new purchase
             $this->reference_no = 'REF-' . strtoupper(Str::random(6));
             $this->purchase_date = Carbon::now()->format('Y-m-d');
             $this->items[] = ['product_id' => '', 'quantity' => 1, 'unit_cost' => 0];
@@ -99,7 +99,7 @@ class PurchaseForm extends Component
         );
 
         if ($this->purchaseId) {
-            // تحديث المخزون: نطرح الكميات القديمة قبل تحديث العناصر الجديدة
+            // Reverse the stock added by the old items before saving the new ones
             foreach ($purchase->items as $oldItem) {
                 $oldItem->product->decrement('stock_quantity', $oldItem->quantity);
             }
