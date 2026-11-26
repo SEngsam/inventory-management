@@ -2,8 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Invoice;
+use App\Models\Purchase;
+use App\Models\Sale;
+use App\Models\SaleReturn;
 use App\Services\InvoiceNumberService;
 use App\Services\SettingsService;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +26,13 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        //
+        // Store short, stable names in polymorphic columns (e.g. the stock
+        // ledger's reference_type) instead of PHP class names.
+        Relation::morphMap([
+            'invoice' => Invoice::class,
+            'purchase' => Purchase::class,
+            'sale' => Sale::class,
+            'sale_return' => SaleReturn::class,
+        ]);
     }
 }
