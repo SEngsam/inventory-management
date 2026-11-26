@@ -43,14 +43,13 @@ class InvoiceNumberService
 
     private function ensureAndLockGet(string $key, string $default): string
     {
-        DB::table('settings')->updateOrInsert(
-            ['key' => $key],
-            [
-                'value' => DB::raw("COALESCE(value, '{$this->escapeSql($default)}')"),
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
+        // Create the row with its default on first use; leave existing values alone.
+        DB::table('settings')->insertOrIgnore([
+            'key' => $key,
+            'value' => $default,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         // Now lock and read the existing row
         $row = DB::table('settings')
@@ -90,10 +89,5 @@ class InvoiceNumberService
         }, $out);
 
         return $out;
-    }
-
-    private function escapeSql(string $value): string
-    {
-        return str_replace("'", "''", $value);
     }
 }
